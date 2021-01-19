@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
 import popechess.engine.Piece;
+import popechess.engine.Position;
 
 public class GameScreen implements Screen {
     private Main main;
@@ -25,15 +26,20 @@ public class GameScreen implements Screen {
 
 		if(Gdx.input.justTouched()) {
 		    if(main.pieceBeingCarried == null) {
-                Piece piece = main.getPieceFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
-                if(piece != Piece.EMPTY && piece != null) {
-                    main.pieceBeingCarried = piece;
-                }
+                Position position = main.getPositionFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
+                Piece piece = main.board.getTileAtPosition(position).getPiece();
+                System.out.println(main.board.getPieceName(piece));
+//		        Position position = main.getPositionFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
+//		        Piece piece = main.board.getTileAtPosition(position).getPiece();
+//                if(piece != Piece.EMPTY && piece != null) {
+//                    main.pieceBeingCarried = piece;
+//                }
             } else {
-		        Piece piece = main.getPieceFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
-		        if(piece == Piece.EMPTY && piece != null) {
-		            main.pieceBeingCarried = null;
-                }
+//                Position position = main.getPositionFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
+//                Piece piece = main.board.getTileAtPosition(position).getPiece();
+//		        if(piece == Piece.EMPTY && piece != null) {
+//		            main.pieceBeingCarried = null;
+//                }
             }
 
         }

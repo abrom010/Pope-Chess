@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import popechess.engine.Board;
 import popechess.engine.Piece;
+import popechess.engine.Position;
+import popechess.util.Utils;
 
 public class Main extends Game {
 	SpriteBatch spriteBatch;
@@ -24,33 +26,35 @@ public class Main extends Game {
 	float horizontalOffset;
 	float verticalOffset;
 
-	Texture popeTexture;
-	Texture whiteRookTexture;
-	Texture whiteKnightTexture;
-	Texture whiteBishopTexture;
-	Texture whiteQueenTexture;
-	Texture whiteKingTexture;
-	Texture whitePawnTexture;
-	Texture blackRookTexture;
-	Texture blackKnightTexture;
-	Texture blackBishopTexture;
-	Texture blackQueenTexture;
-	Texture blackKingTexture;
-	Texture blackPawnTexture;
-
+//	Texture popeTexture;
+//	Texture whiteRookTexture;
+//	Texture whiteKnightTexture;
+//	Texture whiteBishopTexture;
+//	Texture whiteQueenTexture;
+//	Texture whiteKingTexture;
+//	Texture whitePawnTexture;
+//	Texture blackRookTexture;
+//	Texture blackKnightTexture;
+//	Texture blackBishopTexture;
+//	Texture blackQueenTexture;
+//	Texture blackKingTexture;
+//	Texture blackPawnTexture;
+//
 	Sprite popeSprite;
-	Sprite whiteRookSprite;
-	Sprite whiteKnightSprite;
-	Sprite whiteBishopSprite;
-	Sprite whiteQueenSprite;
-	Sprite whiteKingSprite;
-	Sprite whitePawnSprite;
-	Sprite blackRookSprite;
-	Sprite blackKnightSprite;
-	Sprite blackBishopSprite;
-	Sprite blackQueenSprite;
-	Sprite blackKingSprite;
-	Sprite blackPawnSprite;
+//	Sprite whiteRookSprite;
+//	Sprite whiteKnightSprite;
+//	Sprite whiteBishopSprite;
+//	Sprite whiteQueenSprite;
+//	Sprite whiteKingSprite;
+//	Sprite whitePawnSprite;
+//	Sprite blackRookSprite;
+//	Sprite blackKnightSprite;
+//	Sprite blackBishopSprite;
+//	Sprite blackQueenSprite;
+//	Sprite blackKingSprite;
+//	Sprite blackPawnSprite;
+
+	Utils utils;
 
 	@Override
 	public void create() {
@@ -76,23 +80,10 @@ public class Main extends Game {
 			verticalOffset = 0;
 		}
 
-		// textures
-		popeTexture = new Texture(Gdx.files.internal("pope.png"));
-		whiteRookTexture = new Texture(Gdx.files.internal("whiterook.png"));
-		whiteKnightTexture = new Texture(Gdx.files.internal("whiteknight.png"));
-		whiteBishopTexture = new Texture(Gdx.files.internal("whitebishop.png"));
-		whiteQueenTexture = new Texture(Gdx.files.internal("whitequeen.png"));
-		whiteKingTexture = new Texture(Gdx.files.internal("whiteking.png"));
-		whitePawnTexture = new Texture(Gdx.files.internal("whitepawn.png"));
-		blackRookTexture = new Texture(Gdx.files.internal("blackrook.png"));
-		blackKnightTexture = new Texture(Gdx.files.internal("blackknight.png"));
-		blackBishopTexture = new Texture(Gdx.files.internal("blackbishop.png"));
-		blackQueenTexture = new Texture(Gdx.files.internal("blackqueen.png"));
-		blackKingTexture = new Texture(Gdx.files.internal("blackking.png"));
-		blackPawnTexture = new Texture(Gdx.files.internal("blackpawn.png"));
+		utils = new Utils();
 
 		// sprites
-		popeSprite = new Sprite(popeTexture);
+		popeSprite = new Sprite(utils.getTextureFromPiece(Piece.POPE));
 		popeSprite.setOriginCenter();
 		popeSprite.setSize(squareLength, squareLength);
 	}
@@ -101,7 +92,6 @@ public class Main extends Game {
 	public void dispose() {
 		spriteBatch.dispose();
 		shapeRenderer.dispose();
-		popeTexture.dispose();
 	}
 
 	@Override
@@ -126,9 +116,9 @@ public class Main extends Game {
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(Color.BROWN);
 		for(int j=0; j<8; j++) {
-			shapeRenderer = alternateColor(shapeRenderer, Color.BROWN, Color.TAN);
+			shapeRenderer = utils.alternateColor(shapeRenderer, Color.BROWN, Color.TAN);
 			for(int i=0; i<8; i++) {
-				shapeRenderer = alternateColor(shapeRenderer, Color.BROWN, Color.TAN);
+				shapeRenderer = utils.alternateColor(shapeRenderer, Color.BROWN, Color.TAN);
 				shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
 			}
 		}
@@ -144,8 +134,8 @@ public class Main extends Game {
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
-				Texture pieceTexture = getTextureFromPiece(board.state[j][i]);
-				if(pieceTexture == null || pieceTexture == popeTexture) continue;
+				Texture pieceTexture = utils.getTextureFromPiece(board.getTileAtPosition(new Position(i,j)).getPiece());
+				if(pieceTexture == null) continue;
 				Sprite pieceSprite = new Sprite(pieceTexture);
 				pieceSprite.setOriginCenter();
 				pieceSprite.setSize(squareLength*.8f, squareLength*.8f);
@@ -156,49 +146,7 @@ public class Main extends Game {
 		spriteBatch.end();
 	}
 
-	ShapeRenderer alternateColor(ShapeRenderer shapeRenderer, Color color1, Color color2) {
-		if(shapeRenderer.getColor().equals(color1)) {
-			shapeRenderer.setColor(color2);
-		} else {
-			shapeRenderer.setColor(color1);
-		}
-		return shapeRenderer;
-	}
-	
-	Texture getTextureFromPiece(Piece piece) {
-		switch(piece) {
-			case POPE:
-				return popeTexture;
-			case WHITE_ROOK:
-				return whiteRookTexture;
-			case WHITE_KNIGHT:
-				return whiteKnightTexture;
-			case WHITE_BISHOP:
-				return whiteBishopTexture;
-			case WHITE_QUEEN:
-				return whiteQueenTexture;
-			case WHITE_KING:
-				return whiteKingTexture;
-			case WHITE_PAWN:
-				return whitePawnTexture;
-			case BLACK_ROOK:
-				return blackRookTexture;
-			case BLACK_KNIGHT:
-				return blackKnightTexture;
-			case BLACK_BISHOP:
-				return blackBishopTexture;
-			case BLACK_QUEEN:
-				return blackQueenTexture;
-			case BLACK_KING:
-				return blackKingTexture;
-			case BLACK_PAWN:
-				return blackPawnTexture;
-			default:
-				return null;
-		}
-	}
-
-	public Piece getPieceFromCoordinates(int x, int y) {
+	public Position getPositionFromCoordinates(int x, int y) {
 		float boardStartX = horizontalOffset;
 		float boardEndX = horizontalOffset+backgroundLength;
 		float boardStartY = verticalOffset;
@@ -212,7 +160,8 @@ public class Main extends Game {
 			int i =((int)x2 / (int)squareLength);
 			int j = ((int)y2 / (int)squareLength);
 
-			return board.state[j][i];
+			return new Position(i, j);
+			//board.getTileAtIndices(i,j).getPiece();
 		}
 		return null;
 	}
