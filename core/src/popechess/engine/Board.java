@@ -1,5 +1,8 @@
 package popechess.engine;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static popechess.engine.Piece.EMPTY;
 import static popechess.engine.Piece.POPE;
 import static popechess.engine.Piece.BLACK_ROOK;
@@ -32,6 +35,10 @@ public class Board {
         };
     }
 
+    public Board(Tile[][] state) {
+        this.state = state;
+    }
+
     public Tile getTileAtPosition(Position position) {
         return  state[position.j][position.i];
     }
@@ -40,40 +47,94 @@ public class Board {
         return getTileAtPosition(position).getPiece();
     }
 
-    public String getPieceName(Piece piece) {
+    public List<Position> getPiecePossiblePositions(Position piecePosition) {
+        Piece piece = getPieceAtPosition(piecePosition);
         switch(piece) {
             case POPE:
-                return "POPE";
+                return getPopePossiblePositions(piecePosition);
             case WHITE_ROOK:
-                return "WHITE_ROOK";
+                return getWhiteRookPossiblePositions(piecePosition);
             case WHITE_KNIGHT:
-                return "WHITE_KNIGHT";
+                return getWhiteKnightPossiblePositions(piecePosition);
             case WHITE_BISHOP:
-                return "WHITE_BISHOP";
+                return getWhiteBishopPossiblePositions(piecePosition);
             case WHITE_QUEEN:
-                return "WHITE_QUEEN";
+                return getWhiteQueenPossiblePositions(piecePosition);
             case WHITE_KING:
-                return "WHITE_KING";
+                return getWhiteKingPossiblePositions(piecePosition);
             case WHITE_PAWN:
-                return "WHITE_PAWN";
+                return getWhitePawnPossiblePositions(piecePosition);
             case BLACK_ROOK:
-                return "BLACK_ROOK";
+                return getBlackRookPossiblePositions(piecePosition);
             case BLACK_KNIGHT:
-                return "BLACK_KNIGHT";
+                return getBlackKnightPossiblePositions(piecePosition);
             case BLACK_BISHOP:
-                return "BLACK_BISHOP";
+                return getBlackBishopPossiblePositions(piecePosition);
             case BLACK_QUEEN:
-                return "BLACK_QUEEN";
+                return getBlackQueenPossiblePositions(piecePosition);
             case BLACK_KING:
-                return "BLACK_KING";
+                return getBlackKingPossiblePositions(piecePosition);
             case BLACK_PAWN:
-                return "BLACK_PAWN";
-            case EMPTY:
-                return "EMPTY";
+                return getBlackPawnPossiblePositions(piecePosition);
             default:
-                return "null";
+                return new ArrayList<Position>();
         }
     }
 
+    private List<Position> getBlackPawnPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
 
+    private List<Position> getBlackKingPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getBlackQueenPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getBlackBishopPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getBlackKnightPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getBlackRookPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getWhitePawnPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getWhiteKingPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getWhiteQueenPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getWhiteBishopPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getWhiteKnightPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+
+    private List<Position> getWhiteRookPossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    private List<Position> getPopePossiblePositions(Position piecePosition) {
+        return new ArrayList<Position>();
+    }
+
+    public Board getCopyOfBoard() {
+        return new Board(this.state);
+    }
 }

@@ -8,16 +8,20 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import popechess.engine.Board;
 import popechess.engine.Piece;
 import popechess.engine.Position;
 import popechess.util.Utils;
 
 public class Main extends Game {
+	List<Position> possiblePositions;
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRenderer;
 	Board board;
-	Piece pieceBeingCarried;
+	Position positionOfPieceBeingMoved;
 
 	int width;
 	int height;
@@ -61,7 +65,8 @@ public class Main extends Game {
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 		board = new Board();
-		pieceBeingCarried = null;
+		positionOfPieceBeingMoved = null;
+		possiblePositions = null;
 
 		setScreen(new MenuScreen(this));
 
@@ -69,6 +74,7 @@ public class Main extends Game {
 		height = Gdx.graphics.getHeight();
 		backgroundLength = Math.min(width, height);
 		squareLength = backgroundLength/8;
+
 		if(width>height) {
 			horizontalOffset = (width-height)/2;
 			verticalOffset = 0;
@@ -131,11 +137,16 @@ public class Main extends Game {
 		popeSprite.setPosition(horizontalOffset+(this.backgroundLength/2)-squareLength/2,verticalOffset+(this.backgroundLength/2)-squareLength/2);
 		popeSprite.draw(spriteBatch);
 
+		List<Position> popePositions = new ArrayList<>();
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
 				Texture pieceTexture = utils.getTextureFromPiece(board.getTileAtPosition(new Position(i,j)).getPiece());
 				if(pieceTexture == null) continue;
+				else if(pieceTexture == utils.getTextureFromPiece(Piece.POPE)) {
+					popePositions.add(new Position(i,j));
+					continue;
+				}
 				Sprite pieceSprite = new Sprite(pieceTexture);
 				pieceSprite.setOriginCenter();
 				pieceSprite.setSize(squareLength*.8f, squareLength*.8f);
@@ -153,7 +164,6 @@ public class Main extends Game {
 		float boardEndY = verticalOffset+backgroundLength;
 
 		if(x>boardStartX && x<boardEndX && y>boardStartY && y<boardEndY) {
-			// extract piece from coordinates
 			float x2 = (x - boardStartX);
 			float y2 = (boardEndY - y);
 
@@ -161,8 +171,13 @@ public class Main extends Game {
 			int j = ((int)y2 / (int)squareLength);
 
 			return new Position(i, j);
-			//board.getTileAtIndices(i,j).getPiece();
 		}
 		return null;
+	}
+
+	public void drawPossiblePositions(List<Position> possiblePositions) {
+		for(Position position : possiblePositions) {
+			// draw highlighting over square
+		}
 	}
 }

@@ -1,8 +1,8 @@
 package popechess.engine;
 
 public class Position {
-    int i;
-    int j;
+    public int i;
+    public int j;
 
     public Position(int i, int j) {
         this.i = i;
