@@ -124,7 +124,11 @@ public class Main extends Game {
 					if(p.i == i && p.j == j) contains = true;
 				}
 				if(contains) {
+					if(board.getPieceAtPosition(new Position(i, j)) != Piece.EMPTY) {
+						shapeRenderer.setColor(new Color(1, 0, 0, 0.3f));
+					}
 					shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+					shapeRenderer.setColor(new Color(1, 1, 0, 0.3f));
 				}
 			}
 		}
@@ -142,7 +146,6 @@ public class Main extends Game {
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
-
 				Position position = new Position(i,j);
 				Tile tile = board.getTileAtPosition(position);
 				Texture pieceTexture = utils.getTextureFromPiece(tile.getPiece());

@@ -39,6 +39,7 @@ public class Board {
     }
 
     public Tile getTileAtPosition(Position position) {
+        if(position.i < 0 || position.i > 7 || position.j < 0 || position.j > 7) return null;
         return  state[position.j][position.i];
     }
 
@@ -80,6 +81,7 @@ public class Board {
 
     private List<Position> getBlackPawnPossiblePositions(Position piecePosition) {
         List<Position> possiblePositions = new ArrayList<>();
+        if(piecePosition.j==0) return null;
         int i1 = piecePosition.i;
         int j1 = piecePosition.j - 1;
         int j2 = j1 - 1;
@@ -138,7 +140,43 @@ public class Board {
     }
 
     private List<Position> getWhitePawnPossiblePositions(Position piecePosition) {
-        return new ArrayList<Position>();
+        List<Position> possiblePositions = new ArrayList<>();
+        if(piecePosition.j==7) return null;
+        int i1 = piecePosition.i;
+        int j1 = piecePosition.j + 1;
+        int j2 = j1 + 1;
+
+        Position moveForwardOnce = new Position(i1,j1);
+        Piece piece1 = this.getPieceAtPosition(moveForwardOnce);
+        if(piece1 == EMPTY) {
+            possiblePositions.add(moveForwardOnce);
+        }
+
+        if(piecePosition.j == 1) {
+            Position moveForwardTwice = new Position(i1,j2);
+            Piece piece2 = this.getPieceAtPosition(moveForwardTwice);
+            if(piece2 == EMPTY) {
+                possiblePositions.add(moveForwardTwice);
+            }
+        }
+
+        int i2 = i1 - 1;
+        int i3 = i1 + 1;
+        Position attackLeft = new Position(i2, j1);
+        Tile tile3 = this.getTileAtPosition(attackLeft);
+        Piece piece3 = tile3.getPiece();
+        if(piece3 != EMPTY && piece3 != WHITE_KING && !tile3.isPieceWhite() && !tile3.isPopeProtected()) {
+            possiblePositions.add(attackLeft);
+        }
+
+        Position attackRight = new Position(i3, j1);
+        Tile tile4 = this.getTileAtPosition(attackRight);
+        Piece piece4 = tile4.getPiece();
+        if(piece4 != EMPTY && piece4 != WHITE_KING && !tile4.isPieceWhite() && !tile4.isPopeProtected()) {
+            possiblePositions.add(attackRight);
+        }
+
+        return possiblePositions;
     }
 
     private List<Position> getWhiteKingPossiblePositions(Position piecePosition) {

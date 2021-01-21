@@ -30,26 +30,29 @@ public class GameScreen implements Screen {
 		if(Gdx.input.justTouched()) { // if click
 		    if(main.positionOfPieceBeingMoved == null) { // Trying to pick up piece
                 Position position = main.getPositionFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
-                Tile tile = main.board.getTileAtPosition(position);
-                Piece piece = tile.getPiece();
-                if(piece != Piece.EMPTY && piece != null) {
-                    main.positionOfPieceBeingMoved = position;
-                    main.possiblePositions = main.board.getPiecePossiblePositions(main.positionOfPieceBeingMoved);
+                if(position != null) {
+                    Tile tile = main.board.getTileAtPosition(position);
+                    Piece piece = tile.getPiece();
+                    if(piece != Piece.EMPTY && piece != null) {
+                        main.positionOfPieceBeingMoved = position;
+                        main.possiblePositions = main.board.getPiecePossiblePositions(main.positionOfPieceBeingMoved);
+                        if(main.possiblePositions == null) main.positionOfPieceBeingMoved = null;
+                    }
                 }
             } else { // Placing piece
                 Position position = main.getPositionFromCoordinates(Gdx.input.getX(), Gdx.input.getY());
-
-                boolean contains = false;
-                for(Position p : main.possiblePositions) {
-                    if(p.i == position.i && p.j == position.j) contains = true;
+                if(position != null) {
+                    boolean contains = false;
+                    for(Position p : main.possiblePositions) {
+                        if(p.i == position.i && p.j == position.j) contains = true;
+                    }
+                    if(contains) {
+                        Tile tile = main.board.getTileAtPosition(position);
+                        tile.setPiece(main.board.getPieceAtPosition(main.positionOfPieceBeingMoved));
+                        Tile originalTile = main.board.getTileAtPosition(main.positionOfPieceBeingMoved);
+                        originalTile.setPiece(Piece.EMPTY);
+                    }
                 }
-                if(contains) {
-                    Tile tile = main.board.getTileAtPosition(position);
-                    tile.setPiece(main.board.getPieceAtPosition(main.positionOfPieceBeingMoved));
-                    Tile originalTile = main.board.getTileAtPosition(main.positionOfPieceBeingMoved);
-                    originalTile.setPiece(Piece.EMPTY);
-                }
-
 		        main.positionOfPieceBeingMoved = null;
 		        main.possiblePositions = null;
             }
