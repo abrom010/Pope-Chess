@@ -20,6 +20,7 @@ import static popechess.engine.Piece.WHITE_PAWN;
 
 public class Board {
     public Tile[][] state;
+    public Pope pope;
 
     public Board() {
         this.state = new Tile[][] {
@@ -32,10 +33,13 @@ public class Board {
             {new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN)},
             {new Tile(BLACK_ROOK), new Tile(BLACK_KNIGHT), new Tile(BLACK_BISHOP), new Tile(BLACK_QUEEN), new Tile(BLACK_KING), new Tile(BLACK_BISHOP), new Tile(BLACK_KNIGHT), new Tile(BLACK_ROOK)}
         };
+
+        pope = new Pope();
     }
 
     public Board(Tile[][] state) {
         this.state = state;
+        pope = new Pope();
     }
 
     public Tile getTileAtPosition(Position position) {
@@ -105,14 +109,14 @@ public class Board {
         Position attackLeft = new Position(i2, j1);
         Tile tile3 = this.getTileAtPosition(attackLeft);
         Piece piece3 = tile3.getPiece();
-        if(piece3 != EMPTY && piece3 != WHITE_KING && tile3.isPieceWhite() && !tile3.isPopeProtected()) {
+        if(piece3 != EMPTY && piece3 != WHITE_KING && tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
             possiblePositions.add(attackLeft);
         }
 
         Position attackRight = new Position(i3, j1);
         Tile tile4 = this.getTileAtPosition(attackRight);
         Piece piece4 = tile4.getPiece();
-        if(piece4 != EMPTY && piece4 != WHITE_KING && tile4.isPieceWhite() && !tile4.isPopeProtected()) {
+        if(piece4 != EMPTY && piece4 != WHITE_KING && tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
             possiblePositions.add(attackRight);
         }
 
@@ -165,14 +169,14 @@ public class Board {
         Position attackLeft = new Position(i2, j1);
         Tile tile3 = this.getTileAtPosition(attackLeft);
         Piece piece3 = tile3.getPiece();
-        if(piece3 != EMPTY && piece3 != WHITE_KING && !tile3.isPieceWhite() && !tile3.isPopeProtected()) {
+        if(piece3 != EMPTY && piece3 != WHITE_KING && !tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
             possiblePositions.add(attackLeft);
         }
 
         Position attackRight = new Position(i3, j1);
         Tile tile4 = this.getTileAtPosition(attackRight);
         Piece piece4 = tile4.getPiece();
-        if(piece4 != EMPTY && piece4 != WHITE_KING && !tile4.isPieceWhite() && !tile4.isPopeProtected()) {
+        if(piece4 != EMPTY && piece4 != WHITE_KING && !tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
             possiblePositions.add(attackRight);
         }
 

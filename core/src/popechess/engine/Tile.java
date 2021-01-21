@@ -80,8 +80,4 @@ public class Tile {
                 return "null";
         }
     }
-
-    public boolean isPopeProtected() {
-        return false;
-    }
 }
