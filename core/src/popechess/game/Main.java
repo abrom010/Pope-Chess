@@ -3,10 +3,12 @@ package popechess.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.GL20;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 import popechess.engine.Board;
 import popechess.engine.Piece;
 import popechess.engine.Position;
+import popechess.engine.Tile;
 import popechess.util.Utils;
 
 public class Main extends Game {
@@ -30,33 +33,9 @@ public class Main extends Game {
 	float horizontalOffset;
 	float verticalOffset;
 
-//	Texture popeTexture;
-//	Texture whiteRookTexture;
-//	Texture whiteKnightTexture;
-//	Texture whiteBishopTexture;
-//	Texture whiteQueenTexture;
-//	Texture whiteKingTexture;
-//	Texture whitePawnTexture;
-//	Texture blackRookTexture;
-//	Texture blackKnightTexture;
-//	Texture blackBishopTexture;
-//	Texture blackQueenTexture;
-//	Texture blackKingTexture;
-//	Texture blackPawnTexture;
-//
+	Texture popeTexture;
 	Sprite popeSprite;
-//	Sprite whiteRookSprite;
-//	Sprite whiteKnightSprite;
-//	Sprite whiteBishopSprite;
-//	Sprite whiteQueenSprite;
-//	Sprite whiteKingSprite;
-//	Sprite whitePawnSprite;
-//	Sprite blackRookSprite;
-//	Sprite blackKnightSprite;
-//	Sprite blackBishopSprite;
-//	Sprite blackQueenSprite;
-//	Sprite blackKingSprite;
-//	Sprite blackPawnSprite;
+
 
 	Utils utils;
 
@@ -88,10 +67,11 @@ public class Main extends Game {
 
 		utils = new Utils();
 
-		// sprites
-		popeSprite = new Sprite(utils.getTextureFromPiece(Piece.POPE));
+		// pope
+		popeTexture = new Texture("pope.png");
+		popeSprite = new Sprite(popeTexture);
 		popeSprite.setOriginCenter();
-		popeSprite.setSize(squareLength, squareLength);
+		popeSprite.setSize(squareLength*1.2f, squareLength*1.2f);
 	}
 
 	@Override
@@ -130,23 +110,43 @@ public class Main extends Game {
 		}
 		shapeRenderer.end();
 	}
+	
+	void drawHighlights() {
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		Gdx.gl.glEnable(GL30.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+		shapeRenderer.setColor(new Color(1, 1, 0, 0.3f));
+		for(int j=0; j<8; j++) {
+			for(int i=0; i<8; i++) {
+				if(positionOfPieceBeingMoved == null) continue;
+				boolean contains = false;
+				for(Position p : possiblePositions) {
+					if(p.i == i && p.j == j) contains = true;
+				}
+				if(contains) {
+					shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+				}
+			}
+		}
+		shapeRenderer.end();
+		Gdx.gl.glDisable(GL30.GL_BLEND);
+	}
 
 	void drawPieces() {
 		spriteBatch.begin();
 
-		popeSprite.setPosition(horizontalOffset+(this.backgroundLength/2)-squareLength/2,verticalOffset+(this.backgroundLength/2)-squareLength/2);
+		popeSprite.setPosition(horizontalOffset+(this.backgroundLength/2)-squareLength*1.2f/2,verticalOffset+(this.backgroundLength/2)-squareLength*1.2f/2);
 		popeSprite.draw(spriteBatch);
 
 		List<Position> popePositions = new ArrayList<>();
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
-				Texture pieceTexture = utils.getTextureFromPiece(board.getTileAtPosition(new Position(i,j)).getPiece());
+
+				Position position = new Position(i,j);
+				Tile tile = board.getTileAtPosition(position);
+				Texture pieceTexture = utils.getTextureFromPiece(tile.getPiece());
 				if(pieceTexture == null) continue;
-				else if(pieceTexture == utils.getTextureFromPiece(Piece.POPE)) {
-					popePositions.add(new Position(i,j));
-					continue;
-				}
 				Sprite pieceSprite = new Sprite(pieceTexture);
 				pieceSprite.setOriginCenter();
 				pieceSprite.setSize(squareLength*.8f, squareLength*.8f);
@@ -173,11 +173,5 @@ public class Main extends Game {
 			return new Position(i, j);
 		}
 		return null;
-	}
-
-	public void drawPossiblePositions(List<Position> possiblePositions) {
-		for(Position position : possiblePositions) {
-			// draw highlighting over square
-		}
 	}
 }

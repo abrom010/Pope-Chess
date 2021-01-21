@@ -57,8 +57,8 @@ public class GameScreen implements Screen {
         }
 
 		main.drawBoard();
+		main.drawHighlights();
 		main.drawPieces();
-
 
     }
 

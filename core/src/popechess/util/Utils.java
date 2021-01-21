@@ -24,8 +24,6 @@ public class Utils {
 
     public Texture getTextureFromPiece(Piece piece) {
         switch(piece) {
-            case POPE:
-                return popeTexture;
             case WHITE_ROOK:
                 return whiteRookTexture;
             case WHITE_KNIGHT:

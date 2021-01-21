@@ -17,8 +17,6 @@ public class Tile {
 
     public boolean isPieceWhite() {
         switch(piece) {
-            case POPE:
-                return false;
             case WHITE_ROOK:
                 return true;
             case WHITE_KNIGHT:
@@ -52,8 +50,6 @@ public class Tile {
 
     public String getPieceName() {
         switch(piece) {
-            case POPE:
-                return "POPE";
             case WHITE_ROOK:
                 return "WHITE_ROOK";
             case WHITE_KNIGHT:
@@ -83,5 +79,9 @@ public class Tile {
             default:
                 return "null";
         }
+    }
+
+    public boolean isPopeProtected() {
+        return false;
     }
 }
