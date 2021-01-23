@@ -6,6 +6,7 @@ import java.util.List;
 public class Pope {
     // position should be in a 7x7 array
     Position position;
+    Position previousPosition;
     boolean justMoved;
     List<Position> protectedTiles;
 

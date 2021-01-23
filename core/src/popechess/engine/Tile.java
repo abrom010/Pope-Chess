@@ -19,6 +19,8 @@ public class Tile {
         return this.piece == Piece.EMPTY;
     }
 
+    public boolean isPieceKing() { return this.piece == Piece.BLACK_KING || this.piece == Piece.WHITE_KING; }
+
     public boolean isPieceWhite() {
         switch(piece) {
             case WHITE_ROOK:

@@ -64,38 +64,106 @@ public class Board {
 
     public List<Position> getPiecePossiblePositions(Position piecePosition) {
         Piece piece = getPieceAtPosition(piecePosition);
-        // test
-        Tile tile = getTileAtPosition(piecePosition);
-        System.out.println(tile.getPieceName());
-        // test
+        List<Position> possiblePositions;
         switch(piece) {
             case WHITE_ROOK:
-                return getWhiteRookPossiblePositions(piecePosition);
+                possiblePositions = getWhiteRookPossiblePositions(piecePosition);
+                break;
             case WHITE_KNIGHT:
-                return getWhiteKnightPossiblePositions(piecePosition);
+                possiblePositions = getWhiteKnightPossiblePositions(piecePosition);
+				break;
             case WHITE_BISHOP:
-                return getWhiteBishopPossiblePositions(piecePosition);
+                possiblePositions = getWhiteBishopPossiblePositions(piecePosition);
+				break;
             case WHITE_QUEEN:
-                return getWhiteQueenPossiblePositions(piecePosition);
+                possiblePositions = getWhiteQueenPossiblePositions(piecePosition);
+				break;
             case WHITE_KING:
-                return getWhiteKingPossiblePositions(piecePosition);
+                possiblePositions = getWhiteKingPossiblePositions(piecePosition);
+				break;
             case WHITE_PAWN:
-                return getWhitePawnPossiblePositions(piecePosition);
+                possiblePositions = getWhitePawnPossiblePositions(piecePosition);
+				break;
             case BLACK_ROOK:
-                return getBlackRookPossiblePositions(piecePosition);
+                possiblePositions = getBlackRookPossiblePositions(piecePosition);
+				break;
             case BLACK_KNIGHT:
-                return getBlackKnightPossiblePositions(piecePosition);
+                possiblePositions = getBlackKnightPossiblePositions(piecePosition);
+				break;
             case BLACK_BISHOP:
-                return getBlackBishopPossiblePositions(piecePosition);
+                possiblePositions = getBlackBishopPossiblePositions(piecePosition);
+				break;
             case BLACK_QUEEN:
-                return getBlackQueenPossiblePositions(piecePosition);
+                possiblePositions = getBlackQueenPossiblePositions(piecePosition);
+				break;
             case BLACK_KING:
-                return getBlackKingPossiblePositions(piecePosition);
+                possiblePositions = getBlackKingPossiblePositions(piecePosition);
+				break;
             case BLACK_PAWN:
-                return getBlackPawnPossiblePositions(piecePosition);
+                possiblePositions = getBlackPawnPossiblePositions(piecePosition);
+				break;
             default:
-                return new ArrayList<Position>();
+                possiblePositions = new ArrayList<>();
         }
+        if(possiblePositions == null) return possiblePositions;
+        List<Position> possiblePositions2 = new ArrayList<>();
+        for(Position p : possiblePositions) {
+            if(p == null) continue;
+            if(p.i < 0 || p.i > 7 || p.j < 0 || p.j >7) continue;
+            Tile tile = getTileAtPosition(p);
+            if(tile == null) continue;
+            if(!(tile.isPieceKing() || (pope.isTileProtected(p) && !tile.isEmpty()))) {
+                possiblePositions2.add(p);
+            }
+        }
+        return possiblePositions2;
+    }
+
+    public List<Position> getPiecePossiblePositionsWithKingAttacks(Position piecePosition) {
+        Piece piece = getPieceAtPosition(piecePosition);
+        List<Position> possiblePositions;
+        switch(piece) {
+            case WHITE_ROOK:
+                possiblePositions = getWhiteRookPossiblePositions(piecePosition);
+                break;
+            case WHITE_KNIGHT:
+                possiblePositions = getWhiteKnightPossiblePositions(piecePosition);
+                break;
+            case WHITE_BISHOP:
+                possiblePositions = getWhiteBishopPossiblePositions(piecePosition);
+                break;
+            case WHITE_QUEEN:
+                possiblePositions = getWhiteQueenPossiblePositions(piecePosition);
+                break;
+            case WHITE_KING:
+                possiblePositions = getWhiteKingPossiblePositions(piecePosition);
+                break;
+            case WHITE_PAWN:
+                possiblePositions = getWhitePawnPossiblePositions(piecePosition);
+                break;
+            case BLACK_ROOK:
+                possiblePositions = getBlackRookPossiblePositions(piecePosition);
+                break;
+            case BLACK_KNIGHT:
+                possiblePositions = getBlackKnightPossiblePositions(piecePosition);
+                break;
+            case BLACK_BISHOP:
+                possiblePositions = getBlackBishopPossiblePositions(piecePosition);
+                break;
+            case BLACK_QUEEN:
+                possiblePositions = getBlackQueenPossiblePositions(piecePosition);
+                break;
+            case BLACK_KING:
+                possiblePositions = getBlackKingPossiblePositions(piecePosition);
+                break;
+            case BLACK_PAWN:
+                possiblePositions = getBlackPawnPossiblePositions(piecePosition);
+                break;
+            default:
+                possiblePositions = new ArrayList<>();
+        }
+
+        return possiblePositions;
     }
 
     private List<Position> getBlackPawnPossiblePositions(Position piecePosition) {
@@ -122,20 +190,20 @@ public class Board {
         int i2 = i1 - 1;
         int i3 = i1 + 1;
         Position attackLeft = new Position(i2, j1);
-        if(attackLeft.i>0) {
+        if(attackLeft.i>=0) {
             Tile tile3 = this.getTileAtPosition(attackLeft);
             Piece piece3 = tile3.getPiece();
-            if(piece3 != EMPTY && piece3 != WHITE_KING && tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
+            if(piece3 != EMPTY && tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
                 possiblePositions.add(attackLeft);
             }
         }
 
 
         Position attackRight = new Position(i3, j1);
-        if(attackRight.i<7) {
+        if(attackRight.i<8) {
             Tile tile4 = this.getTileAtPosition(attackRight);
             Piece piece4 = tile4.getPiece();
-            if(piece4 != EMPTY && piece4 != WHITE_KING && tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
+            if(piece4 != EMPTY && tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
                 possiblePositions.add(attackRight);
             }
         }
@@ -272,7 +340,8 @@ public class Board {
         while(--i >= 0 && --j >= 0 && getTileAtPosition(new Position(i,j)).isEmpty()) {
             possiblePositions.add(new Position(i,j));
         }
-        if(i >= 0 && j >= 0 && getTileAtPosition(new Position(i,j)).isPieceWhite()) {
+        Tile tile1 = getTileAtPosition(new Position(i,j));
+        if(i >= 0 && j >= 0 && tile1.isPieceWhite()) {
             if(!pope.isTileProtected(new Position(i,j))) {
                 possiblePositions.add(new Position(i,j));
             }
@@ -284,7 +353,8 @@ public class Board {
         while(++i < 8 && --j >= 0 && getTileAtPosition(new Position(i,j)).isEmpty()) {
             possiblePositions.add(new Position(i,j));
         }
-        if(i < 8 && j >= 0 && getTileAtPosition(new Position(i,j)).isPieceWhite()) {
+        Tile tile2 = getTileAtPosition(new Position(i,j));
+        if(i < 8 && j >= 0 && tile2.isPieceWhite()) {
             if(!pope.isTileProtected(new Position(i,j))) {
                 possiblePositions.add(new Position(i,j));
             }
@@ -296,7 +366,8 @@ public class Board {
         while(--i >= 0 && ++j < 8 && getTileAtPosition(new Position(i,j)).isEmpty()) {
             possiblePositions.add(new Position(i,j));
         }
-        if(i >= 0 && j < 8 && getTileAtPosition(new Position(i,j)).isPieceWhite()) {
+        Tile tile3 = getTileAtPosition(new Position(i,j));
+        if(i >= 0 && j < 8 && tile3.isPieceWhite()) {
             if(!pope.isTileProtected(new Position(i,j))) {
                 possiblePositions.add(new Position(i,j));
             }
@@ -308,7 +379,8 @@ public class Board {
         while(++i < 8 && ++j < 8 && getTileAtPosition(new Position(i,j)).isEmpty()) {
             possiblePositions.add(new Position(i,j));
         }
-        if(i < 8 && j < 8 && getTileAtPosition(new Position(i,j)).isPieceWhite()) {
+        Tile tile4 = getTileAtPosition(new Position(i,j));
+        if(i < 8 && j < 8 && tile4.isPieceWhite()) {
             if(!pope.isTileProtected(new Position(i,j))) {
                 possiblePositions.add(new Position(i,j));
             }
@@ -318,7 +390,83 @@ public class Board {
     }
 
     private List<Position> getBlackKnightPossiblePositions(Position piecePosition) {
-        return new ArrayList<Position>();
+        List<Position> possiblePositions = new ArrayList<>();
+        int iLeftOnce = piecePosition.i-1;
+        int iLeftTwice = piecePosition.i-2;
+        int iRightOnce = piecePosition.i+1;
+        int iRightTwice = piecePosition.i+2;
+
+        int jUpOnce = piecePosition.j+1;
+        int jUpTwice = piecePosition.j+2;
+        int jDownOnce = piecePosition.j-1;
+        int jDownTwice = piecePosition.j-2;
+
+        if(iLeftOnce >= 0) {
+            if(jUpTwice < 8) {
+                Position position = new Position(iLeftOnce, jUpTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownTwice >= 0) {
+                Position position = new Position(iLeftOnce, jDownTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iLeftTwice >= 0) {
+            if(jUpOnce < 8) {
+                Position position = new Position(iLeftTwice, jUpOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownOnce >= 0) {
+                Position position = new Position(iLeftTwice, jDownOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iRightOnce < 8) {
+            if(jUpTwice < 8) {
+                Position position = new Position(iRightOnce, jUpTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownTwice >= 0) {
+                Position position = new Position(iRightOnce, jDownTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iRightTwice < 8) {
+            if(jUpOnce < 8) {
+                Position position = new Position(iRightTwice, jUpOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownOnce >= 0) {
+                Position position = new Position(iRightTwice, jDownOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+
+        return possiblePositions;
     }
 
     private List<Position> getBlackRookPossiblePositions(Position piecePosition) {
@@ -386,7 +534,7 @@ public class Board {
         int i2 = i1 - 1;
         int i3 = i1 + 1;
         Position attackLeft = new Position(i2, j1);
-        if(attackLeft.i>0) {
+        if(attackLeft.i>=0) {
             Tile tile3 = this.getTileAtPosition(attackLeft);
             Piece piece3 = tile3.getPiece();
             if (piece3 != EMPTY && piece3 != BLACK_KING && !tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
@@ -396,7 +544,7 @@ public class Board {
 
 
         Position attackRight = new Position(i3, j1);
-        if(attackRight.i<7) {
+        if(attackRight.i<8) {
             Tile tile4 = this.getTileAtPosition(attackRight);
             Piece piece4 = tile4.getPiece();
             if(piece4 != EMPTY && piece4 != BLACK_KING && !tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
@@ -583,7 +731,83 @@ public class Board {
     }
 
     private List<Position> getWhiteKnightPossiblePositions(Position piecePosition) {
-        return new ArrayList<Position>();
+        List<Position> possiblePositions = new ArrayList<>();
+        int iLeftOnce = piecePosition.i-1;
+        int iLeftTwice = piecePosition.i-2;
+        int iRightOnce = piecePosition.i+1;
+        int iRightTwice = piecePosition.i+2;
+
+        int jUpOnce = piecePosition.j+1;
+        int jUpTwice = piecePosition.j+2;
+        int jDownOnce = piecePosition.j-1;
+        int jDownTwice = piecePosition.j-2;
+
+        if(iLeftOnce >= 0) {
+            if(jUpTwice < 8) {
+                Position position = new Position(iLeftOnce, jUpTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownTwice >= 0) {
+                Position position = new Position(iLeftOnce, jDownTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iLeftTwice >= 0) {
+            if(jUpOnce < 8) {
+                Position position = new Position(iLeftTwice, jUpOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownOnce >= 0) {
+                Position position = new Position(iLeftTwice, jDownOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iRightOnce < 8) {
+            if(jUpTwice < 8) {
+                Position position = new Position(iRightOnce, jUpTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownTwice >= 0) {
+                Position position = new Position(iRightOnce, jDownTwice);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+        if(iRightTwice < 8) {
+            if(jUpOnce < 8) {
+                Position position = new Position(iRightTwice, jUpOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+            if(jDownOnce >= 0) {
+                Position position = new Position(iRightTwice, jDownOnce);
+                Tile tile = getTileAtPosition(position);
+                if(tile.isEmpty() || (!tile.isPieceWhite() && !pope.isTileProtected(position))) {
+                    possiblePositions.add(position);
+                }
+            }
+        }
+
+        return possiblePositions;
     }
 
 
@@ -630,6 +854,61 @@ public class Board {
 
     public Board getCopyOfBoard() {
         return new Board(this.state);
+    }
+
+    private List<Position> getEveryPositionWithPiece() {
+        List<Position> positions = new ArrayList<>();
+        for(int i=0; i<8; i++) {
+            for(int j=0; j<8; j++) {
+                Position position = new Position(i,j);
+                if(!getTileAtPosition(position).isEmpty()) {
+                    positions.add(position);
+                }
+            }
+        }
+        return positions;
+    }
+
+    private boolean isBlackKingInCheck() {
+        Position kingPosition = new Position(-1,-1);
+        for(Position p : getEveryPositionWithPiece()) {
+            if(getPieceAtPosition(p)==Piece.BLACK_KING) {
+                kingPosition = p;
+                break;
+            }
+        }
+        System.out.println(kingPosition.toString());
+
+        for(Position p : getEveryPositionWithPiece()) {
+            Tile tile = getTileAtPosition(p);
+            if(getPieceAtPosition(p) != null && !tile.isEmpty() && tile.isPieceWhite() && !tile.isPieceKing()) {
+                for(Position p2 : getPiecePossiblePositionsWithKingAttacks(p)) {
+                    if(p2.i == kingPosition.i && p2.j == kingPosition.j) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isWhiteKingInCheck() {
+        Position kingPosition = new Position(-1,-1);
+        for(Position p : getEveryPositionWithPiece()) {
+            if(getPieceAtPosition(p)==Piece.WHITE_KING) {
+                kingPosition = p;
+                break;
+            }
+        }
+        System.out.println(kingPosition.toString());
+
+        for(Position p : getEveryPositionWithPiece()) {
+            Tile tile = getTileAtPosition(p);
+            if(getPieceAtPosition(p) != null && !tile.isEmpty() && !tile.isPieceWhite() && !tile.isPieceKing()) {
+                for(Position p2 : getPiecePossiblePositionsWithKingAttacks(p)) {
+                    if(p2.i == kingPosition.i && p2.j == kingPosition.j) return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isNextMoveCheckForBlack() {

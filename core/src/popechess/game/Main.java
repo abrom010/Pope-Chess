@@ -173,11 +173,6 @@ public class Main extends Game {
 
 	void drawPieces() {
 		spriteBatch.begin();
-		// popeSprite#setPosition(center) -> this.backgroundLength/2
-		Position popePosition = board.pope.getPosition();
-		popeSprite.setPosition(horizontalOffset+(popePosition.i*squareLength+squareLength)-squareLength*1.2f/2,verticalOffset+(popePosition.j*squareLength+squareLength)-squareLength*1.2f/2);
-		popeSprite.draw(spriteBatch);
-
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
@@ -192,6 +187,9 @@ public class Main extends Game {
 				pieceSprite.draw(spriteBatch);
 			}
 		}
+		Position popePosition = board.pope.getPosition();
+		popeSprite.setPosition(horizontalOffset+(popePosition.i*squareLength+squareLength)-squareLength*1.2f/2,verticalOffset+(popePosition.j*squareLength+squareLength)-squareLength*1.2f/2);
+		popeSprite.draw(spriteBatch);
 		spriteBatch.end();
 	}
 
