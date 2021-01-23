@@ -38,14 +38,18 @@ public class Main extends Game {
 
 
 	Utils utils;
+	public boolean popeBeingMoved;
+	public boolean isWhiteTurn;
 
 	@Override
 	public void create() {
+		popeBeingMoved = false;
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 		board = new Board();
 		positionOfPieceBeingMoved = null;
 		possiblePositions = null;
+		isWhiteTurn = true;
 
 		setScreen(new MenuScreen(this));
 
@@ -110,6 +114,37 @@ public class Main extends Game {
 		}
 		shapeRenderer.end();
 	}
+
+	void drawPopeHighlights() {
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		Gdx.gl.glEnable(GL30.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+		shapeRenderer.setColor(new Color(1,1,1,0.25f));
+		for(int j=0; j<8; j++) {
+			for (int i = 0; i < 8; i++) {
+				for(Position p : board.pope.getProtectedTiles()) {
+					if(p.i == i && p.j == j) {
+						shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+					}
+				}
+			}
+		}
+		shapeRenderer.end();
+		Gdx.gl.glDisable(GL30.GL_BLEND);
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		shapeRenderer.setColor(Color.BLACK);
+		Gdx.gl.glLineWidth(3);
+		for(int j=0; j<8; j++) {
+			for (int i = 0; i < 8; i++) {
+				for(Position p : board.pope.getProtectedTiles()) {
+					if(p.i == i && p.j == j) {
+						shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+					}
+				}
+			}
+		}
+		shapeRenderer.end();
+	}
 	
 	void drawHighlights() {
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -138,11 +173,11 @@ public class Main extends Game {
 
 	void drawPieces() {
 		spriteBatch.begin();
-
-		popeSprite.setPosition(horizontalOffset+(this.backgroundLength/2)-squareLength*1.2f/2,verticalOffset+(this.backgroundLength/2)-squareLength*1.2f/2);
+		// popeSprite#setPosition(center) -> this.backgroundLength/2
+		Position popePosition = board.pope.getPosition();
+		popeSprite.setPosition(horizontalOffset+(popePosition.i*squareLength+squareLength)-squareLength*1.2f/2,verticalOffset+(popePosition.j*squareLength+squareLength)-squareLength*1.2f/2);
 		popeSprite.draw(spriteBatch);
 
-		List<Position> popePositions = new ArrayList<>();
 		float padding = squareLength*.1f;
 		for(int j=0; j<board.state.length; j++) {
 			for(int i=0; i<board.state[0].length; i++) {
@@ -160,7 +195,7 @@ public class Main extends Game {
 		spriteBatch.end();
 	}
 
-	public Position getPositionFromCoordinates(int x, int y) {
+	public Position getPositionFromCoordinates(float x, float y) {
 		float boardStartX = horizontalOffset;
 		float boardEndX = horizontalOffset+backgroundLength;
 		float boardStartY = verticalOffset;
@@ -176,5 +211,38 @@ public class Main extends Game {
 			return new Position(i, j);
 		}
 		return null;
+	}
+
+	public void drawRedDots() {
+		float x = popeSprite.getX() + (popeSprite.getWidth()/2);
+		float y = popeSprite.getY() + (popeSprite.getHeight()/2);
+
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(Color.RED);
+		shapeRenderer.circle(x-squareLength,y,20);
+		shapeRenderer.circle(x+squareLength,y,20);
+		shapeRenderer.circle(x,y-squareLength,20);
+		shapeRenderer.circle(x,y+squareLength,20);
+		shapeRenderer.end();
+	}
+
+	public void setPopeBeingMoved(boolean b) {
+		popeBeingMoved = b;
+	}
+
+	public boolean getPopeBeingMoved() {
+		return popeBeingMoved;
+	}
+
+	public boolean clickedOnPope(float x, float y) {
+		float popeX = popeSprite.getX() + popeSprite.getWidth()*.2f;
+		float popeY = getPopeSpriteY() - popeSprite.getHeight()*.2f;
+		float popeWidth = popeSprite.getWidth() - popeSprite.getWidth()*.5f;
+		float popeHeight = popeSprite.getHeight();
+		return x > popeX && x < popeX+popeWidth && y > popeY && y < popeY+popeHeight;
+	}
+
+	public float getPopeSpriteY() {
+		return height - popeSprite.getY() - squareLength;
 	}
 }

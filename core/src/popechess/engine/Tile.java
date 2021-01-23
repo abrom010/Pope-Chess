@@ -15,6 +15,10 @@ public class Tile {
         this.piece = piece;
     }
 
+    public boolean isEmpty() {
+        return this.piece == Piece.EMPTY;
+    }
+
     public boolean isPieceWhite() {
         switch(piece) {
             case WHITE_ROOK:

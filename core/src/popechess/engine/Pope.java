@@ -13,21 +13,33 @@ public class Pope {
         this.position = new Position(3, 3);
         this.protectedTiles = calculateProtectedTiles();
     }
+
+    public Position getPosition() {
+        return position;
+    }
     
     public void moveUp() {
-        position.j++;
+        if(position.j-1<0) return;
+        position.j--;
+        this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveDown() {
-        position.j--;
+        if(position.j+1>6) return;
+        position.j++;
+        this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveLeft() {
+        if(position.i-1<0) return;
         position.i--;
+        this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveRight() {
+        if(position.i+1>6) return;
         position.i++;
+        this.protectedTiles = calculateProtectedTiles();
     }
 
     public List<Position> calculateProtectedTiles() {
@@ -37,6 +49,10 @@ public class Pope {
         tiles.add(new Position(this.position.i, this.position.j + 1));
         tiles.add(new Position(this.position.i + 1, this.position.j + 1));
         return tiles;
+    }
+
+    public List<Position> getProtectedTiles() {
+        return protectedTiles;
     }
 
     public boolean isTileProtected(Position position) {
