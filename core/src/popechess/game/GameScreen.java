@@ -86,6 +86,8 @@ public class GameScreen implements Screen {
                 }
 		        main.positionOfPieceBeingMoved = null;
 		        main.possiblePositions = null;
+		        main.board.pope.justMoved = false;
+		        main.board.pope.previousPosition = null;
             }
 
         }

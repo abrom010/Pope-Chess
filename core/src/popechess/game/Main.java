@@ -133,7 +133,8 @@ public class Main extends Game {
 		Gdx.gl.glDisable(GL30.GL_BLEND);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.setColor(Color.BLACK);
-		Gdx.gl.glLineWidth(3);
+		// 3
+		Gdx.gl.glLineWidth(squareLength/40);
 		for(int j=0; j<8; j++) {
 			for (int i = 0; i < 8; i++) {
 				for(Position p : board.pope.getProtectedTiles()) {
@@ -148,27 +149,42 @@ public class Main extends Game {
 	
 	void drawHighlights() {
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		Gdx.gl.glEnable(GL30.GL_BLEND);
-		Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+		//Gdx.gl.glEnable(GL30.GL_BLEND);
+		//Gdx.gl.glBlendFunc(GL30.GL_SRC_ALPHA, GL30.GL_ONE_MINUS_SRC_ALPHA);
+
+		// drawing highlights (now not translucent)
 		shapeRenderer.setColor(new Color(1, 1, 0, 0.3f));
 		for(int j=0; j<8; j++) {
 			for(int i=0; i<8; i++) {
 				if(positionOfPieceBeingMoved == null) continue;
-				boolean contains = false;
 				for(Position p : possiblePositions) {
-					if(p.i == i && p.j == j) contains = true;
-				}
-				if(contains) {
-					if(board.getPieceAtPosition(new Position(i, j)) != Piece.EMPTY) {
-						shapeRenderer.setColor(new Color(1, 0, 0, 0.3f));
+					if(p.i == i && p.j == j) {
+						if(board.getPieceAtPosition(new Position(i, j)) != Piece.EMPTY) {
+							shapeRenderer.setColor(new Color(1, 0, 0, 0.3f));
+						}
+						shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+						shapeRenderer.setColor(new Color(1, 1, 0, 0.3f));
 					}
-					shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
-					shapeRenderer.setColor(new Color(1, 1, 0, 0.3f));
+				}
+			}
+		}
+		// drawing borders
+		shapeRenderer.end();
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+		shapeRenderer.setColor(Color.BLACK);
+		Gdx.gl.glLineWidth(squareLength/40);
+		for(int j=0; j<8; j++) {
+			for(int i=0; i<8; i++) {
+				if(positionOfPieceBeingMoved == null) continue;
+				for(Position p : possiblePositions) {
+					if(p.i == i && p.j == j) {
+						shapeRenderer.rect(horizontalOffset+i*squareLength,verticalOffset+j*squareLength, squareLength, squareLength);
+					}
 				}
 			}
 		}
 		shapeRenderer.end();
-		Gdx.gl.glDisable(GL30.GL_BLEND);
+		//Gdx.gl.glDisable(GL30.GL_BLEND);
 	}
 
 	void drawPieces() {
@@ -215,12 +231,24 @@ public class Main extends Game {
 		float x = popeSprite.getX() + (popeSprite.getWidth()/2);
 		float y = popeSprite.getY() + (popeSprite.getHeight()/2);
 
+		// 20
+		float radius = squareLength/5;
+
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 		shapeRenderer.setColor(Color.RED);
-		shapeRenderer.circle(x-squareLength,y,20);
-		shapeRenderer.circle(x+squareLength,y,20);
-		shapeRenderer.circle(x,y-squareLength,20);
-		shapeRenderer.circle(x,y+squareLength,20);
+		if(board.pope.canMoveLeft()) {
+			shapeRenderer.circle(x-squareLength,y,radius);
+		}
+		if(board.pope.canMoveRight()) {
+			shapeRenderer.circle(x+squareLength,y,radius);
+		}
+		if(board.pope.canMoveUp()) {
+			shapeRenderer.circle(x,y+squareLength,radius);
+		}
+		if(board.pope.canMoveDown()) {
+			shapeRenderer.circle(x,y-squareLength,radius);
+		}
+
 		shapeRenderer.end();
 	}
 

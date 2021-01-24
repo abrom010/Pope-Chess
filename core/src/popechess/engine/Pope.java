@@ -6,8 +6,8 @@ import java.util.List;
 public class Pope {
     // position should be in a 7x7 array
     Position position;
-    Position previousPosition;
-    boolean justMoved;
+    public Position previousPosition;
+    public boolean justMoved;
     List<Position> protectedTiles;
 
     public Pope() {
@@ -18,27 +18,71 @@ public class Pope {
     public Position getPosition() {
         return position;
     }
+
+    public boolean canMoveUp() {
+        if(previousPosition==null) return true;
+        Position moveTo = new Position(position.i, position.j+1);
+        System.out.println("Previous position: "+previousPosition.toString());
+        System.out.println("Requested position: "+moveTo.toString());
+        return !justMoved || previousPosition.i != moveTo.i || previousPosition.j != moveTo.j;
+    }
+
+    public boolean canMoveDown() {
+        if(previousPosition==null) return true;
+        Position moveTo = new Position(position.i, position.j-1);
+        System.out.println("Previous position: "+previousPosition.toString());
+        System.out.println("Requested position: "+moveTo.toString());
+        return !justMoved || previousPosition.i != moveTo.i || previousPosition.j != moveTo.j;
+    }
+
+    public boolean canMoveLeft() {
+        if(previousPosition==null) return true;
+        Position moveTo = new Position(position.i-1, position.j);
+        System.out.println("Previous position: "+previousPosition.toString());
+        System.out.println("Requested position: "+moveTo.toString());
+        return !justMoved || previousPosition.i != moveTo.i || previousPosition.j != moveTo.j;
+    }
+
+    public boolean canMoveRight() {
+        if(previousPosition==null) return true;
+        Position moveTo = new Position(position.i+1, position.j);
+        System.out.println("Previous position: "+previousPosition.toString());
+        System.out.println("Requested position: "+moveTo.toString());
+        return !justMoved || previousPosition.i != moveTo.i || previousPosition.j != moveTo.j;
+    }
     
     public void moveUp() {
+        if(!canMoveUp()) return;
         if(position.j-1<0) return;
+        this.previousPosition = new Position(position.i, position.j);
+        this.justMoved = true;
         position.j--;
         this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveDown() {
+        if(!canMoveDown()) return;
         if(position.j+1>6) return;
+        this.previousPosition = new Position(position.i, position.j);
+        this.justMoved = true;
         position.j++;
         this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveLeft() {
+        if(!canMoveLeft()) return;
         if(position.i-1<0) return;
+        this.previousPosition = new Position(position.i, position.j);
+        this.justMoved = true;
         position.i--;
         this.protectedTiles = calculateProtectedTiles();
     }
 
     public void moveRight() {
+        if(!canMoveRight()) return;
         if(position.i+1>6) return;
+        this.previousPosition = new Position(position.i, position.j);
+        this.justMoved = true;
         position.i++;
         this.protectedTiles = calculateProtectedTiles();
     }
