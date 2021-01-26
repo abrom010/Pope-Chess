@@ -49,10 +49,11 @@ public class GameScreen implements Screen {
                             }
                         }
                         main.isWhiteTurn = !main.isWhiteTurn;
+                        if(main.board.firstMove) main.board.firstMove = false;
                     }
                     main.setPopeBeingMoved(false);
                 } else if(main.clickedOnPope(x,y)) { // clicked on pope
-                    main.setPopeBeingMoved(true);
+		            if(!main.board.firstMove) main.setPopeBeingMoved(true);
                 } else { // did not click on pope
                     Position position = main.getPositionFromCoordinates(x, y);
                     if(position != null) {
@@ -77,17 +78,51 @@ public class GameScreen implements Screen {
                         if(p.i == position.i && p.j == position.j) contains = true;
                     }
                     if(contains) {
+                        // castle?
+                        Tile tileOfPieceBeingMoved = main.board.getTileAtPosition(main.positionOfPieceBeingMoved);
+                        if((tileOfPieceBeingMoved.getPiece()==Piece.WHITE_KING || tileOfPieceBeingMoved.getPiece()==Piece.BLACK_KING) && Math.abs(position.i-main.positionOfPieceBeingMoved.i)>1) {
+                            Position rookPosition;
+                            Position newRookPosition;
+                            if(position.i<main.positionOfPieceBeingMoved.i) { // left
+                                rookPosition = new Position(position.i - 2, position.j);
+                                newRookPosition = new Position(position.i + 1, position.j);
+                            } else { // right
+                                rookPosition = new Position(position.i+1,position.j);
+                                newRookPosition = new Position(position.i-1, position.j);
+                            }
+                            main.board.setPieceAtPosition(rookPosition, Piece.EMPTY);
+                            if(tileOfPieceBeingMoved.isPieceWhite()) { // white
+                                if(!main.board.isWhiteKingInCheck()) {
+                                    main.board.setPieceAtPosition(newRookPosition, Piece.WHITE_ROOK);
+                                }
+                            } else { // black
+                                if(!main.board.isBlackKingInCheck()) {
+                                    main.board.setPieceAtPosition(newRookPosition, Piece.BLACK_ROOK);
+                                }
+                            }
+                        }
                         Tile tile = main.board.getTileAtPosition(position);
                         tile.setPiece(main.board.getPieceAtPosition(main.positionOfPieceBeingMoved));
                         Tile originalTile = main.board.getTileAtPosition(main.positionOfPieceBeingMoved);
                         originalTile.setPiece(Piece.EMPTY);
                         main.isWhiteTurn = !main.isWhiteTurn;
+
                     }
                 }
-		        main.positionOfPieceBeingMoved = null;
-		        main.possiblePositions = null;
-		        main.board.pope.justMoved = false;
-		        main.board.pope.previousPosition = null;
+
+                if(main.board.firstMove) main.board.firstMove = false;
+
+                if(!main.board.whiteKingHasMoved && main.board.getPieceAtPosition(position)==Piece.WHITE_KING && position.i!=4) {
+                    main.board.whiteKingHasMoved = true;
+                }
+                if(!main.board.blackKingHasMoved && main.board.getPieceAtPosition(position)==Piece.BLACK_KING && position.i!=4) {
+                    main.board.blackKingHasMoved = true;
+                }
+
+                main.positionOfPieceBeingMoved = null;
+                main.possiblePositions = null;
+		        //main.board.pope.justMoved = false;
+		        //main.board.pope.previousPosition = null;
             }
 
         }
@@ -96,6 +131,7 @@ public class GameScreen implements Screen {
 		main.drawHighlights();
         main.drawPopeHighlights();
 		main.drawPieces();
+		main.drawIndicator();
 
         if(main.getPopeBeingMoved()) {
             main.drawRedDots();

@@ -75,7 +75,8 @@ public class Main extends Game {
 		popeTexture = new Texture("pope.png");
 		popeSprite = new Sprite(popeTexture);
 		popeSprite.setOriginCenter();
-		popeSprite.setSize(squareLength*1.2f, squareLength*1.2f);
+		popeSprite.setSize(squareLength*1.4f, squareLength*1.4f);
+
 	}
 
 	@Override
@@ -204,9 +205,20 @@ public class Main extends Game {
 			}
 		}
 		Position popePosition = board.pope.getPosition();
-		popeSprite.setPosition(horizontalOffset+(popePosition.i*squareLength+squareLength)-squareLength*1.2f/2,verticalOffset+(popePosition.j*squareLength+squareLength)-squareLength*1.2f/2);
+		popeSprite.setPosition(horizontalOffset+(popePosition.i*squareLength+squareLength)-squareLength*1.4f/1.95f,verticalOffset+(popePosition.j*squareLength+squareLength)-squareLength*1.4f/2);
 		popeSprite.draw(spriteBatch);
 		spriteBatch.end();
+	}
+
+	void drawIndicator() {
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		if(isWhiteTurn) {
+			shapeRenderer.setColor(Color.WHITE);
+		} else {
+			shapeRenderer.setColor(Color.BLACK);
+		}
+		shapeRenderer.rect(0,0,squareLength*.8f,squareLength*.8f);
+		shapeRenderer.end();
 	}
 
 	public Position getPositionFromCoordinates(float x, float y) {
@@ -242,10 +254,10 @@ public class Main extends Game {
 		if(board.pope.canMoveRight()) {
 			shapeRenderer.circle(x+squareLength,y,radius);
 		}
-		if(board.pope.canMoveUp()) {
+		if(board.pope.canMoveDown()) {
 			shapeRenderer.circle(x,y+squareLength,radius);
 		}
-		if(board.pope.canMoveDown()) {
+		if(board.pope.canMoveUp()) {
 			shapeRenderer.circle(x,y-squareLength,radius);
 		}
 
