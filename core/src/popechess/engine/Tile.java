@@ -3,7 +3,7 @@ package popechess.engine;
 public class Tile {
     private Piece piece;
 
-    Tile(Piece piece) {
+    public Tile(Piece piece) {
         this.piece = piece;
     }
 

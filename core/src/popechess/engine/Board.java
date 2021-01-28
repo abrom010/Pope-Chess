@@ -20,6 +20,8 @@ import static popechess.engine.Piece.WHITE_PAWN;
 
 public class Board {
     public Tile[][] state;
+    public List<Piece> capturedWhitePieces;
+    public List<Piece> capturedBlackPieces;
     public Pope pope;
     public boolean firstMove;
     public boolean whiteKingHasMoved;
@@ -52,6 +54,8 @@ public class Board {
         firstMove = true;
         whiteKingHasMoved = false;
         blackKingHasMoved = false;
+        capturedWhitePieces = new ArrayList<>();
+        capturedBlackPieces = new ArrayList<>();
     }
 
     public Tile getTileAtPosition(Position position) {
@@ -974,7 +978,9 @@ public class Board {
         for(Position p : getEveryPositionWithPiece()) {
             Tile tile = getTileAtPosition(p);
             if(getPieceAtPosition(p) != null && !tile.isEmpty() && tile.isPieceWhite() && !tile.isPieceKing()) {
-                for(Position p2 : getPiecePossiblePositionsRaw(p)) {
+                List<Position> positions = getPiecePossiblePositionsRaw(p);
+                if(positions == null) continue;
+                for(Position p2 : positions) {
                     if(p2.i == kingPosition.i && p2.j == kingPosition.j) return true;
                 }
             }
@@ -994,7 +1000,9 @@ public class Board {
         for(Position p : getEveryPositionWithPiece()) {
             Tile tile = getTileAtPosition(p);
             if(getPieceAtPosition(p) != null && !tile.isEmpty() && !tile.isPieceWhite() && !tile.isPieceKing()) {
-                for(Position p2 : getPiecePossiblePositionsRaw(p)) {
+                List<Position> positions = getPiecePossiblePositionsRaw(p);
+                if(positions == null) continue;
+                for(Position p2 : positions) {
                     if(p2.i == kingPosition.i && p2.j == kingPosition.j) return true;
                 }
             }

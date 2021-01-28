@@ -4,16 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class MenuScreen implements Screen {
     Main main;
     Texture playButtonInactive;
     Texture playButtonActive;
+    BitmapFont font;
 
     public MenuScreen(Main main) {
         this.main = main;
         this.playButtonInactive = new Texture("play_button_inactive.png");
         this.playButtonActive = new Texture("play_button_active.png");
+        this.font = new BitmapFont();
+        this.font.getData().setScale(5,5);
     }
 
     @Override
@@ -28,6 +32,7 @@ public class MenuScreen implements Screen {
 
         main.spriteBatch.begin();
         main.spriteBatch.draw(playButtonActive,playButtonActive.getWidth()/4.0f,(main.height/2.0f)-playButtonActive.getHeight()/2.0f);
+        font.draw(main.spriteBatch, "Hello, World", 100, 100);
         main.spriteBatch.end();
 
         if(Gdx.input.isTouched()) {

@@ -53,6 +53,33 @@ public class Utils {
         }
     }
 
+    public int getRankFromPiece(Piece piece) {
+        switch(piece) {
+            case WHITE_ROOK:
+                return 4;
+            case WHITE_KNIGHT:
+                return 2;
+            case WHITE_BISHOP:
+                return 3;
+            case WHITE_QUEEN:
+                return 5;
+            case WHITE_PAWN:
+                return 1;
+            case BLACK_ROOK:
+                return 4;
+            case BLACK_KNIGHT:
+                return 2;
+            case BLACK_BISHOP:
+                return 3;
+            case BLACK_QUEEN:
+                return 5;
+            case BLACK_PAWN:
+                return 1;
+            default:
+                return 6;
+        }
+    }
+
     public ShapeRenderer alternateColor(ShapeRenderer shapeRenderer, Color color1, Color color2) {
         if(shapeRenderer.getColor().equals(color1)) {
             shapeRenderer.setColor(color2);

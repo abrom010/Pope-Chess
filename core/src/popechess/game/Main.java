@@ -2,6 +2,7 @@ package popechess.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.GL20;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import popechess.engine.Board;
@@ -19,7 +21,22 @@ import popechess.engine.Position;
 import popechess.engine.Tile;
 import popechess.util.Utils;
 
+import static popechess.engine.Piece.BLACK_BISHOP;
+import static popechess.engine.Piece.BLACK_KING;
+import static popechess.engine.Piece.BLACK_KNIGHT;
+import static popechess.engine.Piece.BLACK_PAWN;
+import static popechess.engine.Piece.BLACK_QUEEN;
+import static popechess.engine.Piece.BLACK_ROOK;
+import static popechess.engine.Piece.EMPTY;
+import static popechess.engine.Piece.WHITE_BISHOP;
+import static popechess.engine.Piece.WHITE_KING;
+import static popechess.engine.Piece.WHITE_KNIGHT;
+import static popechess.engine.Piece.WHITE_PAWN;
+import static popechess.engine.Piece.WHITE_QUEEN;
+import static popechess.engine.Piece.WHITE_ROOK;
+
 public class Main extends Game {
+//	public boolean pawnBeingPromoted;
 	List<Position> possiblePositions;
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRenderer;
@@ -40,9 +57,22 @@ public class Main extends Game {
 	Utils utils;
 	public boolean popeBeingMoved;
 	public boolean isWhiteTurn;
+	public boolean whitePawnBeingPromoted;
+	public boolean blackPawnBeingPromoted;
+	public Position positionOfPawnBeingPromoted;
+
+
+	Prefs prefs;
 
 	@Override
 	public void create() {
+		positionOfPawnBeingPromoted = null;
+		whitePawnBeingPromoted = false;
+		blackPawnBeingPromoted = false;
+
+		Gdx.input.setCatchBackKey(true);
+		prefs = new Prefs();
+
 		popeBeingMoved = false;
 		spriteBatch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
@@ -55,19 +85,21 @@ public class Main extends Game {
 
 		width = Gdx.graphics.getWidth();
 		height = Gdx.graphics.getHeight();
-		backgroundLength = Math.min(width, height);
+		backgroundLength = width;//Math.min(width, height);
 		squareLength = backgroundLength/8;
 
-		if(width>height) {
-			horizontalOffset = (width-height)/2;
-			verticalOffset = 0;
-		} else if(height>width) {
-			horizontalOffset = 0;
-			verticalOffset = (height-width)/2;
-		} else {
-			horizontalOffset = 0;
-			verticalOffset = 0;
-		}
+//		if(width>height) {
+//			horizontalOffset = (width-height)/2;
+//			verticalOffset = 0;
+//		} else if(height>width) {
+//			horizontalOffset = 0;
+//			verticalOffset = (height-width)/2;
+//		} else {
+//			horizontalOffset = 0;
+//			verticalOffset = 0;
+//		}
+		horizontalOffset = 0;
+		verticalOffset = (height-width)/2;
 
 		utils = new Utils();
 
@@ -217,8 +249,85 @@ public class Main extends Game {
 		} else {
 			shapeRenderer.setColor(Color.BLACK);
 		}
-		shapeRenderer.rect(0,0,squareLength*.8f,squareLength*.8f);
+		shapeRenderer.rect(width-squareLength*.8f,0,squareLength*.8f,squareLength*.8f);
+		shapeRenderer.rect(width-squareLength*.8f,height-squareLength*.8f, squareLength*.8f, squareLength*.8f);
 		shapeRenderer.end();
+	}
+
+	void drawCapturedPieces() {
+		spriteBatch.begin();
+		float pieceLength = .4f * squareLength;
+		float padding = .05f * pieceLength;
+
+		// draw black pieces
+		float blackHeight = verticalOffset-pieceLength-padding;
+
+		for(int i=0; i<board.capturedBlackPieces.size(); i++) {
+			Texture pieceTexture = utils.getTextureFromPiece(board.capturedBlackPieces.get(i));
+			Sprite pieceSprite = new Sprite(pieceTexture);
+			pieceSprite.setOriginCenter();
+			pieceSprite.setSize(pieceLength, pieceLength);
+			pieceSprite.setPosition(i*pieceLength+padding,blackHeight-padding);
+			pieceSprite.draw(spriteBatch);
+		}
+
+		// draw white pieces
+		float whiteHeight = verticalOffset+squareLength*8+padding;
+		for(int i=0; i<board.capturedWhitePieces.size(); i++) {
+			Texture pieceTexture = utils.getTextureFromPiece(board.capturedWhitePieces.get(i));
+			Sprite pieceSprite = new Sprite(pieceTexture);
+			pieceSprite.setOriginCenter();
+			pieceSprite.setSize(pieceLength, pieceLength);
+			pieceSprite.setPosition(i*pieceLength+padding,whiteHeight+padding);
+			pieceSprite.draw(spriteBatch);
+		}
+
+		spriteBatch.end();
+	}
+
+	void drawPawnPromotion(boolean white) {
+		float y = this.verticalOffset+squareLength*3;
+		float tabHeight = squareLength*2;
+		float tabWidth = this.width;
+
+		List<Sprite> whiteSprites = Arrays.asList(
+				new Sprite(utils.getTextureFromPiece(WHITE_QUEEN)), new Sprite(utils.getTextureFromPiece(WHITE_ROOK)),
+				new Sprite(utils.getTextureFromPiece(WHITE_BISHOP)), new Sprite(utils.getTextureFromPiece(WHITE_KNIGHT))
+		);
+		List<Sprite> blackSprites = Arrays.asList(
+				new Sprite(utils.getTextureFromPiece(BLACK_QUEEN)), new Sprite(utils.getTextureFromPiece(BLACK_ROOK)),
+				new Sprite(utils.getTextureFromPiece(BLACK_BISHOP)), new Sprite(utils.getTextureFromPiece(BLACK_KNIGHT))
+		);
+
+		float pieceLength = 1.8f * squareLength;
+
+		for(int i=0; i<whiteSprites.size(); i++) {
+			Sprite sprite = whiteSprites.get(i);
+			sprite.setSize(pieceLength,pieceLength);
+			sprite.setPosition(i*tabHeight,y);
+		}
+		for(int i=0; i<blackSprites.size(); i++) {
+			Sprite sprite = blackSprites.get(i);
+			sprite.setSize(pieceLength,pieceLength);
+			sprite.setPosition(i*tabHeight,y);
+		}
+
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(Color.LIGHT_GRAY);
+		shapeRenderer.rect(0, y, tabWidth, tabHeight);
+		shapeRenderer.end();
+		
+		spriteBatch.begin();
+		if(white) {
+			for(Sprite s : whiteSprites) {
+				s.draw(spriteBatch);
+			}
+		} else {
+			for(Sprite s : blackSprites) {
+				s.draw(spriteBatch);
+			}
+		}
+		spriteBatch.end();
 	}
 
 	public Position getPositionFromCoordinates(float x, float y) {

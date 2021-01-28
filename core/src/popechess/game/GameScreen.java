@@ -1,14 +1,17 @@
 package popechess.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
+import java.util.Comparator;
 import java.util.List;
 
 import popechess.engine.Piece;
 import popechess.engine.Position;
 import popechess.engine.Tile;
+import popechess.util.Utils;
 
 public class GameScreen implements Screen {
     private Main main;
@@ -22,12 +25,57 @@ public class GameScreen implements Screen {
 
     }
 
+
     @Override
     public void render(float delta) {
 		Gdx.gl.glClearColor(.5f, .6f, .9f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		if(Gdx.input.justTouched()) { // if click
+        if (Gdx.input.isKeyPressed(Input.Keys.BACK)){
+            main.setScreen(new MenuScreen(main));
+        }
+
+        boolean justTouched = Gdx.input.justTouched();
+
+        if(main.whitePawnBeingPromoted && justTouched) {
+            float x = Gdx.input.getX();
+            float y = Gdx.input.getY();
+            if(y > main.verticalOffset+main.squareLength*3 && y < main.verticalOffset+main.squareLength*3+main.squareLength*2) {
+                float boxWidth = main.squareLength*2;
+                // figure out piece, promote pawn
+                Tile tile = main.board.getTileAtPosition(main.positionOfPawnBeingPromoted);
+                if(x<boxWidth) {
+                    tile.setPiece(Piece.WHITE_QUEEN);
+                } else if(x<boxWidth*2) {
+                    tile.setPiece(Piece.WHITE_ROOK);
+                } else if(x<boxWidth*3) {
+                    tile.setPiece(Piece.WHITE_BISHOP);
+                } else {
+                    tile.setPiece(Piece.WHITE_KNIGHT);
+                }
+                main.whitePawnBeingPromoted = false;
+            }
+        } else if(main.blackPawnBeingPromoted && justTouched){
+            float x = Gdx.input.getX();
+            float y = Gdx.input.getY();
+            if(y > main.verticalOffset+main.squareLength*3 && y < main.verticalOffset+main.squareLength*3+main.squareLength*2) {
+                float boxWidth = main.squareLength*2;
+                // figure out piece, promote pawn
+                Tile tile = main.board.getTileAtPosition(main.positionOfPawnBeingPromoted);
+                if(x<boxWidth) {
+                    tile.setPiece(Piece.BLACK_QUEEN);
+                } else if(x<boxWidth*2) {
+                    tile.setPiece(Piece.BLACK_ROOK);
+                } else if(x<boxWidth*3) {
+                    tile.setPiece(Piece.BLACK_BISHOP);
+                } else {
+                    tile.setPiece(Piece.BLACK_KNIGHT);
+                }
+                main.blackPawnBeingPromoted = false;
+            }
+        }
+
+        else if(justTouched) { // if click
 		    float x = Gdx.input.getX();
 		    float y = Gdx.input.getY();
 		    if(main.positionOfPieceBeingMoved == null) { // Not moving regular piece
@@ -64,7 +112,7 @@ public class GameScreen implements Screen {
                                 if(piece != Piece.EMPTY && piece != null) {
                                     main.positionOfPieceBeingMoved = position;
                                     main.possiblePositions = main.board.getPiecePossiblePositions(main.positionOfPieceBeingMoved);
-                                    if(main.possiblePositions == null) main.positionOfPieceBeingMoved = null;
+                                    if(main.possiblePositions == null || main.possiblePositions.isEmpty()) main.positionOfPieceBeingMoved = null;
                                 }
                             }
                         }
@@ -102,11 +150,44 @@ public class GameScreen implements Screen {
                             }
                         }
                         Tile tile = main.board.getTileAtPosition(position);
+
+                        // add to captures
+                        if(!tile.isEmpty() && tile.isPieceWhite()) {
+                            main.board.capturedWhitePieces.add(tile.getPiece());
+                            main.board.capturedWhitePieces.sort(new Comparator<Piece> (){
+                                @Override
+                                public int compare(Piece piece1, Piece piece2) {
+                                    int rank1 = main.utils.getRankFromPiece(piece1);
+                                    int rank2 = main.utils.getRankFromPiece(piece2);
+                                    return Integer.compare(rank1, rank2);
+                                }
+                            }.reversed());
+                        }
+                        else if(!tile.isEmpty() && !tile.isPieceWhite()) {
+                            main.board.capturedBlackPieces.add(tile.getPiece());
+                            main.board.capturedBlackPieces.sort(new Comparator<Piece> (){
+                                @Override
+                                public int compare(Piece piece1, Piece piece2) {
+                                    int rank1 = main.utils.getRankFromPiece(piece1);
+                                    int rank2 = main.utils.getRankFromPiece(piece2);
+                                    return Integer.compare(rank1, rank2);
+                                }
+                            }.reversed());
+                        }
+
                         tile.setPiece(main.board.getPieceAtPosition(main.positionOfPieceBeingMoved));
                         Tile originalTile = main.board.getTileAtPosition(main.positionOfPieceBeingMoved);
                         originalTile.setPiece(Piece.EMPTY);
                         main.isWhiteTurn = !main.isWhiteTurn;
 
+                        // pawn promotion logic
+                        if(tile.getPiece() == Piece.WHITE_PAWN && position.j == 7) {
+                            main.positionOfPawnBeingPromoted = position;
+                            main.whitePawnBeingPromoted = true;
+                        } else if(tile.getPiece() == Piece.BLACK_PAWN && position.j == 0) {
+                            main.positionOfPawnBeingPromoted = position;
+                            main.blackPawnBeingPromoted = true;
+                        }
                     }
                 }
 
@@ -133,6 +214,14 @@ public class GameScreen implements Screen {
 		main.drawPieces();
 		main.drawIndicator();
 
+		main.drawCapturedPieces();
+		if(main.whitePawnBeingPromoted) {
+            main.drawPawnPromotion(true);
+        } else if(main.blackPawnBeingPromoted) {
+		    main.drawPawnPromotion(false);
+        }
+
+
         if(main.getPopeBeingMoved()) {
             main.drawRedDots();
         }
@@ -142,7 +231,7 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         main.width = width;
         main.height = height;
-        main.backgroundLength = Math.min(width, height);
+        main.backgroundLength = width;//Math.min(width, height);
         main.squareLength = main.backgroundLength/8;
     }
 
