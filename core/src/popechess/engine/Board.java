@@ -39,18 +39,7 @@ public class Board {
             {new Tile(BLACK_ROOK), new Tile(BLACK_KNIGHT), new Tile(BLACK_BISHOP), new Tile(BLACK_QUEEN), new Tile(BLACK_KING), new Tile(BLACK_BISHOP), new Tile(BLACK_KNIGHT), new Tile(BLACK_ROOK)}
         };
 
-//        this.state = new Tile[][] {
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(BLACK_ROOK), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
-//            {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)}
-//        };
-
-        pope = new Pope();
+        pope = new Pope(this);
         firstMove = true;
         whiteKingHasMoved = false;
         blackKingHasMoved = false;
@@ -591,7 +580,7 @@ public class Board {
         if(attackLeft.i>=0) {
             Tile tile3 = this.getTileAtPosition(attackLeft);
             Piece piece3 = tile3.getPiece();
-            if (piece3 != EMPTY && piece3 != BLACK_KING && !tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
+            if (piece3 != EMPTY && !tile3.isPieceWhite() && !pope.isTileProtected(attackLeft)) {
                 possiblePositions.add(attackLeft);
             }
         }
@@ -601,7 +590,7 @@ public class Board {
         if(attackRight.i<8) {
             Tile tile4 = this.getTileAtPosition(attackRight);
             Piece piece4 = tile4.getPiece();
-            if(piece4 != EMPTY && piece4 != BLACK_KING && !tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
+            if(piece4 != EMPTY && !tile4.isPieceWhite() && !pope.isTileProtected(attackRight)) {
                 possiblePositions.add(attackRight);
             }
         }
@@ -1011,15 +1000,7 @@ public class Board {
     }
 
     private boolean isNextMoveCheckForBlack(Position startingPosition, Position endingPosition) {
-        Position kingPosition = new Position(-1,-1);
         Board newBoard = getCopyOfBoard();
-        for(Position p : newBoard.getEveryPositionWithPiece()) {
-            if(newBoard.getPieceAtPosition(p)==Piece.BLACK_KING) {
-                kingPosition = p;
-                break;
-            }
-        }
-
         Tile startingTile = newBoard.getTileAtPosition(startingPosition);
         Piece startingPiece = newBoard.getPieceAtPosition(startingPosition);
         newBoard.setPieceAtPosition(endingPosition, startingPiece);
@@ -1028,15 +1009,7 @@ public class Board {
     }
 
     private boolean isNextMoveCheckForWhite(Position startingPosition, Position endingPosition) {
-        Position kingPosition = new Position(-1,-1);
         Board newBoard = getCopyOfBoard();
-        for(Position p : newBoard.getEveryPositionWithPiece()) {
-            if(newBoard.getPieceAtPosition(p)==Piece.WHITE_KING) {
-                kingPosition = p;
-                break;
-            }
-        }
-
         Tile startingTile = newBoard.getTileAtPosition(startingPosition);
         Piece startingPiece = newBoard.getPieceAtPosition(startingPosition);
         newBoard.setPieceAtPosition(endingPosition, startingPiece);
@@ -1045,9 +1018,9 @@ public class Board {
     }
 
     private boolean isPositionUnderWhiteAttack(Position position) {
+        if(pope.isTileProtected(position)) return false;
         for(Position p : this.getEveryPositionWithPiece()) {
             Tile tile = this.getTileAtPosition(p);
-            if(tile.isPieceKing()) continue;
             if(tile.isPieceWhite()) {
                 for(Position p2 : getPiecePossiblePositionsRaw(p)) {
                     if(p2.i==position.i&&p2.j==position.j) return true;
@@ -1058,9 +1031,9 @@ public class Board {
     }
 
     private boolean isPositionUnderBlackAttack(Position position) {
+        if(pope.isTileProtected(position)) return false;
         for(Position p : this.getEveryPositionWithPiece()) {
             Tile tile = this.getTileAtPosition(p);
-            if(tile.isPieceKing()) continue;
             if(!tile.isPieceWhite()) {
                 for(Position p2 : getPiecePossiblePositionsRaw(p)) {
                     if(p2.i==position.i&&p2.j==position.j) return true;

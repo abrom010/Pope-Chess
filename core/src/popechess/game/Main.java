@@ -40,7 +40,7 @@ public class Main extends Game {
 	List<Position> possiblePositions;
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRenderer;
-	Board board;
+	public Board board;
 	Position positionOfPieceBeingMoved;
 
 	int width;
@@ -249,8 +249,8 @@ public class Main extends Game {
 		} else {
 			shapeRenderer.setColor(Color.BLACK);
 		}
-		shapeRenderer.rect(width-squareLength*.8f,0,squareLength*.8f,squareLength*.8f);
-		shapeRenderer.rect(width-squareLength*.8f,height-squareLength*.8f, squareLength*.8f, squareLength*.8f);
+		shapeRenderer.rect(width-squareLength*.8f-squareLength*.1f,0+squareLength*.1f,squareLength*.8f,squareLength*.8f);
+		shapeRenderer.rect(width-squareLength*.8f-squareLength*.1f,height-squareLength*.8f-squareLength*.1f, squareLength*.8f, squareLength*.8f);
 		shapeRenderer.end();
 	}
 
