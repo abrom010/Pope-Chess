@@ -13,6 +13,20 @@ import popechess.engine.Position;
 import popechess.engine.Tile;
 import popechess.util.Utils;
 
+import static popechess.engine.Piece.BLACK_BISHOP;
+import static popechess.engine.Piece.BLACK_KING;
+import static popechess.engine.Piece.BLACK_KNIGHT;
+import static popechess.engine.Piece.BLACK_PAWN;
+import static popechess.engine.Piece.BLACK_QUEEN;
+import static popechess.engine.Piece.BLACK_ROOK;
+import static popechess.engine.Piece.EMPTY;
+import static popechess.engine.Piece.WHITE_BISHOP;
+import static popechess.engine.Piece.WHITE_KING;
+import static popechess.engine.Piece.WHITE_KNIGHT;
+import static popechess.engine.Piece.WHITE_PAWN;
+import static popechess.engine.Piece.WHITE_QUEEN;
+import static popechess.engine.Piece.WHITE_ROOK;
+
 public class GameScreen implements Screen {
     private Main main;
 
@@ -35,9 +49,33 @@ public class GameScreen implements Screen {
             main.setScreen(new MenuScreen(main));
         }
 
+        if(main.board.isWhiteCheckmated() || main.board.isBlackCheckmated()) {
+            main.isCheckmate = true;
+        }
+
         boolean justTouched = Gdx.input.justTouched();
 
-        if(main.whitePawnBeingPromoted && justTouched) {
+        if(main.isCheckmate && justTouched) {
+            main.board.state = new Tile[][] {
+                {new Tile(WHITE_ROOK), new Tile(WHITE_KNIGHT), new Tile(WHITE_BISHOP), new Tile(WHITE_QUEEN), new Tile(WHITE_KING), new Tile(WHITE_BISHOP), new Tile(WHITE_KNIGHT), new Tile(WHITE_ROOK)},
+                {new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN), new Tile(WHITE_PAWN)},
+                {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
+                {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
+                {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
+                {new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY), new Tile(EMPTY)},
+                {new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN), new Tile(BLACK_PAWN)},
+                {new Tile(BLACK_ROOK), new Tile(BLACK_KNIGHT), new Tile(BLACK_BISHOP), new Tile(BLACK_QUEEN), new Tile(BLACK_KING), new Tile(BLACK_BISHOP), new Tile(BLACK_KNIGHT), new Tile(BLACK_ROOK)}
+            };
+            Gdx.gl.glClearColor(.5f, .6f, .9f, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            main.isWhiteTurn = true;
+            main.board.capturedBlackPieces.clear();
+            main.board.capturedWhitePieces.clear();
+            main.board.pope.reset();
+            main.isCheckmate = false;
+        }
+
+        else if(main.whitePawnBeingPromoted && justTouched) {
             float x = Gdx.input.getX();
             float y = Gdx.input.getY();
             if(y > main.verticalOffset+main.squareLength*3 && y < main.verticalOffset+main.squareLength*3+main.squareLength*2) {
@@ -83,21 +121,24 @@ public class GameScreen implements Screen {
                     if(!main.clickedOnPope(x,y)) {
                         float xDiff = x - main.popeSprite.getX()-main.popeSprite.getWidth()/2;
                         float yDiff = y - main.getPopeSpriteY()-main.popeSprite.getHeight()/2;
+                        boolean popeMoved = false;
                         if(Math.abs(xDiff)>Math.abs(yDiff)) {
                             if(xDiff<0) {
-                                main.board.pope.moveLeft();
+                                popeMoved = main.board.pope.moveLeft();
                             } else {
-                                main.board.pope.moveRight();
+                                popeMoved = main.board.pope.moveRight();
                             }
                         } else {
                             if(yDiff<0) {
-                                main.board.pope.moveDown();
+                                popeMoved = main.board.pope.moveDown();
                             } else {
-                                main.board.pope.moveUp();
+                                popeMoved = main.board.pope.moveUp();
                             }
                         }
-                        main.isWhiteTurn = !main.isWhiteTurn;
-                        if(main.board.firstMove) main.board.firstMove = false;
+                        if(popeMoved) {
+                            main.isWhiteTurn = !main.isWhiteTurn;
+                            if(main.board.firstMove) main.board.firstMove = false;
+                        }
                     }
                     main.setPopeBeingMoved(false);
                 } else if(main.clickedOnPope(x,y)) { // clicked on pope
@@ -202,8 +243,6 @@ public class GameScreen implements Screen {
 
                 main.positionOfPieceBeingMoved = null;
                 main.possiblePositions = null;
-		        //main.board.pope.justMoved = false;
-		        //main.board.pope.previousPosition = null;
             }
 
         }
@@ -221,10 +260,14 @@ public class GameScreen implements Screen {
 		    main.drawPawnPromotion(false);
         }
 
-
         if(main.getPopeBeingMoved()) {
             main.drawRedDots();
         }
+
+        if(main.isCheckmate) {
+            main.drawCheckmateBanner();
+        }
+
     }
 
     @Override

@@ -1042,4 +1042,24 @@ public class Board {
         }
         return false;
     }
+
+    public boolean isWhiteCheckmated() {
+        for(Position p : this.getEveryPositionWithPiece()) {
+            Tile tile = this.getTileAtPosition(p);
+            if(tile.isPieceWhite()) {
+                if(!getPiecePossiblePositions(p).isEmpty()) return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isBlackCheckmated() {
+        for(Position p : this.getEveryPositionWithPiece()) {
+            Tile tile = this.getTileAtPosition(p);
+            if(!tile.isPieceWhite()) {
+                if(!getPiecePossiblePositions(p).isEmpty()) return false;
+            }
+        }
+        return true;
+    }
 }

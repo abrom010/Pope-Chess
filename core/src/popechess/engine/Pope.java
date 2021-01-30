@@ -51,32 +51,36 @@ public class Pope {
         return previousPosition.i != moveTo.i || previousPosition.j != moveTo.j;
     }
     
-    public void moveUp() {
-        if(!canMoveUp()) return;
+    public boolean moveUp() {
+        if(!canMoveUp()) return false;
         this.previousPosition = new Position(position.i, position.j);
         position.j--;
         this.protectedTiles = calculateProtectedTiles();
+        return true;
     }
 
-    public void moveDown() {
-        if(!canMoveDown()) return;
+    public boolean moveDown() {
+        if(!canMoveDown()) return false;
         this.previousPosition = new Position(position.i, position.j);
         position.j++;
         this.protectedTiles = calculateProtectedTiles();
+        return true;
     }
 
-    public void moveLeft() {
-        if(!canMoveLeft()) return;
+    public boolean moveLeft() {
+        if(!canMoveLeft()) return false;
         this.previousPosition = new Position(position.i, position.j);
         position.i--;
         this.protectedTiles = calculateProtectedTiles();
+        return true;
     }
 
-    public void moveRight() {
-        if(!canMoveRight()) return;
+    public boolean moveRight() {
+        if(!canMoveRight()) return false;
         this.previousPosition = new Position(position.i, position.j);
         position.i++;
         this.protectedTiles = calculateProtectedTiles();
+        return true;
     }
 
     public List<Position> calculateProtectedTiles() {
@@ -98,5 +102,10 @@ public class Pope {
             if(p.i == position.i && p.j == position.j) return true;
         }
         return false;
+    }
+
+    public void reset() {
+        this.position = new Position(3, 3);
+        this.protectedTiles = calculateProtectedTiles();
     }
 }

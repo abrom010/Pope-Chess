@@ -6,10 +6,13 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.math.Circle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +39,8 @@ import static popechess.engine.Piece.WHITE_QUEEN;
 import static popechess.engine.Piece.WHITE_ROOK;
 
 public class Main extends Game {
-//	public boolean pawnBeingPromoted;
+	public boolean isCheckmate;
+	//	public boolean pawnBeingPromoted;
 	List<Position> possiblePositions;
 	SpriteBatch spriteBatch;
 	ShapeRenderer shapeRenderer;
@@ -80,6 +84,7 @@ public class Main extends Game {
 		positionOfPieceBeingMoved = null;
 		possiblePositions = null;
 		isWhiteTurn = true;
+		isCheckmate = false;
 
 		setScreen(new MenuScreen(this));
 
@@ -285,6 +290,26 @@ public class Main extends Game {
 		spriteBatch.end();
 	}
 
+	void drawCheckmateBanner() {
+		float y = this.verticalOffset+squareLength*3;
+		y -= squareLength*.2f;
+		float tabHeight = squareLength*2.4f;
+		float tabWidth = this.width;
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.setColor(Color.WHITE);
+		shapeRenderer.rect(0, y, tabWidth, tabHeight);
+		shapeRenderer.end();
+		BitmapFont font = new BitmapFont();
+		font.setColor(Color.BLACK);
+		font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+		font.getData().setScale(10);
+		GlyphLayout layout = new GlyphLayout();
+		layout.setText(font, "Checkmate!");
+		this.spriteBatch.begin();
+		font.draw(this.spriteBatch, "Checkmate!", Gdx.graphics.getWidth()/2.0f-layout.width/2.0f, Gdx.graphics.getHeight()/2.0f+layout.height/2.0f);
+		this.spriteBatch.end();
+	}
+
 	void drawPawnPromotion(boolean white) {
 		float y = this.verticalOffset+squareLength*3;
 		float tabHeight = squareLength*2;
@@ -382,11 +407,29 @@ public class Main extends Game {
 	}
 
 	public boolean clickedOnPope(float x, float y) {
-		float popeX = popeSprite.getX() + popeSprite.getWidth()*.2f;
-		float popeY = getPopeSpriteY() - popeSprite.getHeight()*.2f;
-		float popeWidth = popeSprite.getWidth() - popeSprite.getWidth()*.5f;
-		float popeHeight = popeSprite.getHeight();
-		return x > popeX && x < popeX+popeWidth && y > popeY && y < popeY+popeHeight;
+		float popeX = popeSprite.getX() + popeSprite.getWidth()/2;
+		float popeY = getPopeSpriteY() + popeSprite.getWidth()/5;
+		float radius = (popeSprite.getWidth() - popeSprite.getWidth()*.5f)/2;
+		Circle circle = new Circle(popeX,popeY,radius);
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.circle(popeX,popeY,radius);
+		shapeRenderer.end();
+		return circle.contains(x,y);
+//		float popeX = popeSprite.getX() + popeSprite.getWidth()*.2f;
+//		float popeY = getPopeSpriteY() - popeSprite.getHeight()*.2f;
+//		float popeWidth = popeSprite.getWidth() - popeSprite.getWidth()*.5f;
+//		float popeHeight = popeSprite.getHeight();
+//		return x > popeX && x < popeX+popeWidth && y > popeY && y < popeY+popeHeight;
+	}
+
+	public void drawHitbox() {
+		float popeX = popeSprite.getX() + popeSprite.getWidth()/2;
+		float popeY = getPopeSpriteY() + popeSprite.getWidth()/5;
+		float radius = (popeSprite.getWidth() - popeSprite.getWidth()*.5f)/2;
+		Circle circle = new Circle(popeX,popeY,radius);
+		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+		shapeRenderer.circle(popeX,popeY,radius);
+		shapeRenderer.end();
 	}
 
 	public float getPopeSpriteY() {
