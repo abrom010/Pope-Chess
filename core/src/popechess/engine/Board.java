@@ -1,5 +1,7 @@
 package popechess.engine;
 
+import com.badlogic.gdx.math.Interpolation;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -268,10 +270,10 @@ public class Board {
             {
                 Position position = new Position(iLeft, j);
                 Tile tile = getTileAtPosition(position);
-                if (tile.isEmpty()) {
+                if (tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if (!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if (!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -280,10 +282,10 @@ public class Board {
             if(jUp < 8) {
                 Position position = new Position(iLeft,jUp);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -292,10 +294,10 @@ public class Board {
             if(jDown >= 0) {
                 Position position = new Position(iLeft,jDown);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -306,22 +308,22 @@ public class Board {
             {
                 Position position = new Position(iRight,j);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
             }
             // move up
             if(jUp < 8) {
-                Position position = new Position(i,jUp);
+                Position position = new Position(iRight,jUp);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -330,10 +332,10 @@ public class Board {
             if(jDown >= 0) {
                 Position position = new Position(iRight,jDown);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -342,12 +344,12 @@ public class Board {
 
         // move up
         if(jUp < 8) {
-            Position position = new Position(iRight,jUp);
+            Position position = new Position(i,jUp);
             Tile tile = getTileAtPosition(position);
-            if(tile.isEmpty()) {
+            if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                 possiblePositions.add(position);
             } else {
-                if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 }
             }
@@ -356,10 +358,10 @@ public class Board {
         if(jDown >= 0) {
             Position position = new Position(i,jDown);
             Tile tile = getTileAtPosition(position);
-            if(tile.isEmpty()) {
+            if(tile.isEmpty() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                 possiblePositions.add(position);
             } else {
-                if(!pope.isTileProtected(position) && tile.isPieceWhite()) {
+                if(!pope.isTileProtected(position) && tile.isPieceWhite() && !isPositionUnderWhiteAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 }
             }
@@ -648,10 +650,10 @@ public class Board {
             {
                 Position position = new Position(iLeft, j);
                 Tile tile = getTileAtPosition(position);
-                if (tile.isEmpty()) {
+                if (tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if (!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if (!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -660,10 +662,10 @@ public class Board {
             if(jUp < 8) {
                 Position position = new Position(iLeft,jUp);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -672,10 +674,10 @@ public class Board {
             if(jDown >= 0) {
                 Position position = new Position(iLeft,jDown);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -686,22 +688,22 @@ public class Board {
             {
                 Position position = new Position(iRight,j);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
             }
             // move up
             if(jUp < 8) {
-                Position position = new Position(i,jUp);
+                Position position = new Position(iRight,jUp);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -710,10 +712,10 @@ public class Board {
             if(jDown >= 0) {
                 Position position = new Position(iRight,jDown);
                 Tile tile = getTileAtPosition(position);
-                if(tile.isEmpty()) {
+                if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 } else {
-                    if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                    if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                         possiblePositions.add(position);
                     }
                 }
@@ -722,12 +724,12 @@ public class Board {
 
         // move up
         if(jUp < 8) {
-            Position position = new Position(iRight,jUp);
+            Position position = new Position(i,jUp);
             Tile tile = getTileAtPosition(position);
-            if(tile.isEmpty()) {
+            if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                 possiblePositions.add(position);
             } else {
-                if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 }
             }
@@ -736,10 +738,10 @@ public class Board {
         if(jDown >= 0) {
             Position position = new Position(i,jDown);
             Tile tile = getTileAtPosition(position);
-            if(tile.isEmpty()) {
+            if(tile.isEmpty() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                 possiblePositions.add(position);
             } else {
-                if(!pope.isTileProtected(position) && !tile.isPieceWhite()) {
+                if(!pope.isTileProtected(position) && !tile.isPieceWhite() && !isPositionUnderBlackAttack(new Position(position.i,position.j))) {
                     possiblePositions.add(position);
                 }
             }
@@ -1018,29 +1020,164 @@ public class Board {
     }
 
     private boolean isPositionUnderWhiteAttack(Position position) {
-        if(pope.isTileProtected(position)) return false;
         for(Position p : this.getEveryPositionWithPiece()) {
             Tile tile = this.getTileAtPosition(p);
             if(tile.isPieceWhite()) {
-                for(Position p2 : getPiecePossiblePositionsRaw(p)) {
-                    if(p2.i==position.i&&p2.j==position.j) return true;
+                if(tile.isPieceKing()) {
+                    for(Position p2 : getBlackKingPossiblePositionsRaw(p)) {
+                        if(p2.i==position.i&&p2.j==position.j) return true;
+                    }
+                } else {
+                        for(Position p2 : getPiecePossiblePositionsRaw(p)) {
+                            if(p2.i==position.i&&p2.j==position.j) {
+                                if(tile.isPiecePawn() && p2.i!=position.i) {
+                                    return true;
+                                }
+                            }
+                        }
                 }
             }
         }
         return false;
     }
 
+    private List<Position> getWhiteKingPossiblePositionsRaw(Position piecePosition) {
+        List<Position> possiblePositions = new ArrayList<>();
+
+        int i = piecePosition.i;
+        int j = piecePosition.j;
+        int iLeft = i-1;
+        int iRight = i+1;
+        int jUp = j+1;
+        int jDown = j-1;
+
+        if(iLeft >= 0) {
+            // move side
+            {
+                Position position = new Position(iLeft, j);
+                possiblePositions.add(position);
+            }
+            // move up
+            if(jUp < 8) {
+                Position position = new Position(iLeft,jUp);
+                possiblePositions.add(position);
+            }
+            // move down
+            if(jDown >= 0) {
+                Position position = new Position(iLeft,jDown);
+                possiblePositions.add(position);
+            }
+        }
+        if(iRight < 8) {
+            // move side
+            {
+                Position position = new Position(iRight,j);
+                possiblePositions.add(position);
+            }
+            // move up
+            if(jUp < 8) {
+                Position position = new Position(iRight,jUp);
+                possiblePositions.add(position);
+            }
+            // move down
+            if(jDown >= 0) {
+                Position position = new Position(iRight,jDown);
+                possiblePositions.add(position);
+            }
+        }
+
+        // move up
+        if(jUp < 8) {
+            Position position = new Position(i,jUp);
+            possiblePositions.add(position);
+        }
+        // move down
+        if(jDown >= 0) {
+            Position position = new Position(i,jDown);
+            possiblePositions.add(position);
+        }
+        return possiblePositions;
+    }
+
+
     private boolean isPositionUnderBlackAttack(Position position) {
-        if(pope.isTileProtected(position)) return false;
         for(Position p : this.getEveryPositionWithPiece()) {
             Tile tile = this.getTileAtPosition(p);
             if(!tile.isPieceWhite()) {
-                for(Position p2 : getPiecePossiblePositionsRaw(p)) {
-                    if(p2.i==position.i&&p2.j==position.j) return true;
+                if(tile.isPieceKing()) {
+                    for(Position p2 : getBlackKingPossiblePositionsRaw(p)) {
+                        if(p2.i==position.i&&p2.j==position.j) return true;
+                    }
+                } else {
+                    for(Position p2 : getPiecePossiblePositionsRaw(p)) {
+                        if(p2.i==position.i&&p2.j==position.j) {
+                            if(tile.isPiecePawn() && p2.i!=position.i) {
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
         }
         return false;
+    }
+
+    private List<Position> getBlackKingPossiblePositionsRaw(Position piecePosition) {
+        List<Position> possiblePositions = new ArrayList<>();
+
+        int i = piecePosition.i;
+        int j = piecePosition.j;
+        int iLeft = i-1;
+        int iRight = i+1;
+        int jUp = j+1;
+        int jDown = j-1;
+
+        if(iLeft >= 0) {
+            // move side
+            {
+                Position position = new Position(iLeft, j);
+                possiblePositions.add(position);
+            }
+            // move up
+            if(jUp < 8) {
+                Position position = new Position(iLeft,jUp);
+                possiblePositions.add(position);
+            }
+            // move down
+            if(jDown >= 0) {
+                Position position = new Position(iLeft,jDown);
+                possiblePositions.add(position);
+            }
+        }
+        if(iRight < 8) {
+            // move side
+            {
+                Position position = new Position(iRight,j);
+                possiblePositions.add(position);
+            }
+            // move up
+            if(jUp < 8) {
+                Position position = new Position(iRight,jUp);
+                possiblePositions.add(position);
+            }
+            // move down
+            if(jDown >= 0) {
+                Position position = new Position(iRight,jDown);
+                possiblePositions.add(position);
+            }
+        }
+
+        // move up
+        if(jUp < 8) {
+            Position position = new Position(i,jUp);
+            possiblePositions.add(position);
+        }
+        // move down
+        if(jDown >= 0) {
+            Position position = new Position(i,jDown);
+            possiblePositions.add(position);
+        }
+        return possiblePositions;
     }
 
     public boolean isWhiteCheckmated() {

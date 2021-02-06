@@ -142,7 +142,8 @@ public class GameScreen implements Screen {
                     }
                     main.setPopeBeingMoved(false);
                 } else if(main.clickedOnPope(x,y)) { // clicked on pope
-		            if(!main.board.firstMove) main.setPopeBeingMoved(true);
+                    if(!(main.board.isWhiteKingInCheck() || main.board.isBlackKingInCheck()))
+		                if(!main.board.firstMove) main.setPopeBeingMoved(true);
                 } else { // did not click on pope
                     Position position = main.getPositionFromCoordinates(x, y);
                     if(position != null) {

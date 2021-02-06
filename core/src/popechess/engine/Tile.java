@@ -86,4 +86,8 @@ public class Tile {
                 return "null";
         }
     }
+
+    public boolean isPiecePawn() {
+        return this.piece == Piece.BLACK_PAWN || this.piece == Piece.WHITE_PAWN;
+    }
 }
