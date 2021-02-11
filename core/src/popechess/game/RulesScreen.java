@@ -27,7 +27,9 @@ public class RulesScreen implements Screen {
         "\n" +
         "7. The Pope cannot be captured, nor can it capture other pieces.\n" +
         "\n" +
-        "8. The Pope may not be moved on white's first turn.\nThe Pope may not be moved until black's first turn.";
+        "8. The Pope may not be moved on white's first turn.\nThe Pope may not be moved until black's first turn.\n" +
+        "\n" +
+        "9. The Pope cannot protect the king." ;
 
     public RulesScreen(Main main) {
         this.main = main;
